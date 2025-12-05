@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Gi.MainPage"
+             BackgroundColor="Black"
+             >
+
+    <!--fondo de pantalla de inicio-->
+    <Grid BackgroundColor="{StaticResource Terciary}">
+
+        <!--marca de agua-->
+        <Label
+         FontAttributes="Bold" FontSize="Small"
+         HorizontalTextAlignment="Center"
+         VerticalTextAlignment="Start" 
+         Text="2025" TextColor="LightGray"/>
+        
+        <!--borde y cuadro central de inicio-->
+        <Border BackgroundColor="{StaticResource Secondary}"
+                WidthRequest="270" HeightRequest="170"
+                StrokeThickness="3" Stroke="{StaticResource Primary}"
+                StrokeShape="RoundRectangle 15"
+                VerticalOptions="Center">
+            
+            <!--distribucion de espacio dentro del cuadro central de inicio-->
+            <VerticalStackLayout Spacing="15" VerticalOptions="Center">
+
+                <!--texto del cuadro central de inicio-->
+                <Label
+                 FontAttributes="Bold" FontSize="Large"
+                 HorizontalTextAlignment="Center"
+                 Text="GESTION DE INGRESOS"
+                 TextColor="{StaticResource Primary}"/>
+
+                <!--boton del cuadro central de inicio-->
+                <Button 
+                 HeightRequest="70" WidthRequest="70"
+                 ImageSource="inicio.svg"
+                 BackgroundColor="{StaticResource Primary}"
+                 Clicked="IniciarInterfaz"/>
+
+            </VerticalStackLayout>
+
+        </Border>
+
+        <!--marca de agua-->
+        <Label
+         FontAttributes="Bold" FontSize="Small"
+         HorizontalTextAlignment="Center"
+         VerticalTextAlignment="End"
+         Text="© R.Closer" TextColor="LightGray"
+         Margin="0,0,0,5"/>
+
+    </Grid>
+
+</ContentPage>

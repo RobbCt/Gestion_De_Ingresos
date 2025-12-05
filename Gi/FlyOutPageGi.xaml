@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<FlyoutPage  xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Gi" 
+             x:Class="Gi.FlyOutPageGi"
+             Title="FlyOutPageGi"
+             FlyoutLayoutBehavior="Split"
+             BackgroundColor="Black"
+             >
+    <!-- Declara el namespace local "xmlns:local="clr-namespace:Gi"" -->
+
+
+
+    <!--pestana lateral-->
+    <FlyoutPage.Flyout>
+
+        <!--contenedor de la pestana lateral-->
+        <ContentPage Title="Menu" BackgroundColor="{StaticResource Terciary}">
+
+            <!--distribucion de la pestana lateral-->
+            <StackLayout Padding="20" Spacing="10">
+
+                <!--borde del label "titular" de la pestana lateral-->
+                <Border BackgroundColor="{StaticResource Primary}"
+                        WidthRequest="400" HeightRequest="40"
+                        Stroke="{StaticResource Primary}"
+                        StrokeShape="RoundRectangle 5"
+                        Margin="0,10,0,0" VerticalOptions="Start"
+                        HorizontalOptions="End">
+
+                    <!--texto del titular-->
+                    <Label
+                     Text="Opciones" FontSize="Large"
+                     HorizontalOptions="Center"
+                     VerticalOptions="Center" 
+                     FontAttributes="Bold" 
+                     TextColor="{StaticResource Secondary}"
+                     Margin="90,0,0,0"/> 
+
+                </Border>
+
+                <!--Item boton exel-->
+                <Button 
+                 Text="Ir al archivo"  ImageSource="exel.svg"
+                 TextColor="{StaticResource Secondary}" 
+                 FontSize="Large" Margin="0,8,0,0"
+                 HorizontalOptions="Fill"
+                 Background="{StaticResource Terciary}"
+                 FontAttributes="None"/>
+                
+                <!--Item boton deudas (proximamente)-->
+                <Button 
+                 Text="Deudas"  ImageSource="deuda.svg"
+                 TextColor="{StaticResource Secondary}"
+                 FontSize="Large"
+                 HorizontalOptions="Fill"
+                 Background="{StaticResource Terciary}"
+                 FontAttributes="None"/>
+
+                <!--inhabilitar toques en espacios vacios
+                <Button
+                 BackgroundColor="Transparent"
+                 HorizontalOptions="Start"
+                 VerticalOptions="Start"
+                 WidthRequest="1000" HeightRequest="1000"/>-->
+
+                
+                
+                
+                
+                
+                <!--/////ESPACIO PARA LA VISUALIZACION DE DATOS VALIDOS INGRESADOS/////-->
+                <StackLayout BackgroundColor="{StaticResource Primary}">
+
+                    <Button
+                     Text="DATOS VALIDADOS" Clicked="visualizarTodosLosDatos"
+                     FontSize="Large" FontAttributes="Bold"
+                     HorizontalOptions="Center"  Margin="0,10,0,0"
+                     BackgroundColor="{StaticResource Primary}"
+                     TextColor="{StaticResource Secondary}"
+                     />
+                    
+                    <Label x:Name="visFecha" Text="Fecha: --" FontSize="Medium" TextColor="White" Margin="10,20,0,10"/>
+                    <Label x:Name="visTipoDePago" Text="Tipo De Pago: --" FontSize="Medium" TextColor="White" Margin="10,0,0,10"/>
+                    <Label x:Name="visMotivo" Text="Motivo: --" FontSize="Medium" TextColor="White" Margin="10,0,0,10"/>
+                    <Label x:Name="visOrigen" Text="Origen: --" FontSize="Medium" TextColor="White" Margin="10,0,0,10"/>
+                    <Label x:Name="visMontoIngreso" Text="Monto (ingreso): 0" FontSize="Medium" TextColor="White" Margin="10,0,0,10"/>
+                    <Label x:Name="visDestino" Text="Destino: --" FontSize="Medium" TextColor="White" Margin="10,0,0,10"/>
+                    <Label x:Name="visDescripcionDelEgreso" Text="Descripcion Del Egreso: --" FontSize="Medium" TextColor="White" Margin="10,0,0,10"/>
+                    <Label x:Name="visMontoEgreso" Text="Monto (egreso): 0" FontSize="Medium" TextColor="White" Margin="10,0,0,10"/>
+
+                    <!--informe del guardado-->
+                    <Label 
+                     x:Name="visInformeReferencia" Text="(estado de validacion)" FontSize="Medium"
+                     VerticalOptions="Center" Margin="0,10,0,10"
+                     HorizontalOptions="Center" TextColor="White"/>
+
+                </StackLayout>
+                
+                
+                
+                
+                
+                
+                
+            </StackLayout>
+            
+        </ContentPage>
+        
+    </FlyoutPage.Flyout>
+
+
+
+    <!--el detail del flyout sera un tabbed page en otro archivo-->
+    <FlyoutPage.Detail>
+        <NavigationPage>
+            <x:Arguments>
+                <local:TabbedPageGi/>
+            </x:Arguments>
+        </NavigationPage>
+    </FlyoutPage.Detail>
+
+</FlyoutPage>
