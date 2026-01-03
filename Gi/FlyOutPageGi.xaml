@@ -46,7 +46,8 @@
                  FontSize="Large" Margin="0,8,0,0"
                  HorizontalOptions="Fill"
                  Background="{StaticResource Terciary}"
-                 FontAttributes="None"/>
+                 FontAttributes="None"
+                 Clicked="irAlArchMovimientos"/>
                 
                 <!--Item boton deudas (proximamente)-->
                 <Button 

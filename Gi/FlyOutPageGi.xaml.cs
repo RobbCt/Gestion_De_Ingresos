@@ -1,4 +1,5 @@
 using System.Xml;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.Maui.Graphics.Text;
 
 namespace Gi;
@@ -16,13 +17,13 @@ public partial class FlyOutPageGi : FlyoutPage
             Command = new Command(OnMenuButtonClicked),
         });
     }
-    //////#Eventos/////
+    //////#EVENTOS/////
     private void OnMenuButtonClicked()
     {
         //Abre el Flyout al presionar el botón del toolbar
         IsPresented = !IsPresented;
     }
-    private void visualizarTodosLosDatos(object sender, EventArgs e)
+    private async void visualizarTodosLosDatos(object sender, EventArgs e)
     {
         bool band = false;
 
@@ -51,8 +52,8 @@ public partial class FlyOutPageGi : FlyoutPage
                 visDestino.Text = $"Destino: {Logica.Destino}";
                 visDestino.TextColor = Colors.White;
 
-                Logica.DescDelIngreso = "--";
-                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelIngreso}";
+                Logica.DescDelEgreso = "--";
+                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelEgreso}";
                 visDescripcionDelEgreso.TextColor = Colors.White;
 
                 Logica.MontoEgreso = 0;
@@ -86,7 +87,7 @@ public partial class FlyOutPageGi : FlyoutPage
                 visDestino.Text = $"Destino: {Logica.Destino}";
                 visDestino.TextColor = Colors.White;
 
-                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelIngreso}";
+                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelEgreso}";
                 visDescripcionDelEgreso.TextColor = Colors.White;
 
                 visMontoEgreso.Text = $"Monto (egreso): {Logica.MontoEgreso}";
@@ -120,8 +121,8 @@ public partial class FlyOutPageGi : FlyoutPage
                 visDestino.Text = $"Destino: {Logica.Destino}";
                 visDestino.TextColor = Colors.White;
 
-                Logica.DescDelIngreso = "--";
-                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelIngreso}";
+                Logica.DescDelEgreso = "--";
+                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelEgreso}";
                 visDescripcionDelEgreso.TextColor = Colors.White;
 
                 Logica.MontoEgreso = 0;
@@ -149,7 +150,7 @@ public partial class FlyOutPageGi : FlyoutPage
                 visDestino.Text = $"Destino: {Logica.Destino}";
                 visDestino.TextColor = Colors.White;
 
-                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelIngreso}";
+                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelEgreso}";
                 visDescripcionDelEgreso.TextColor = Colors.White;
 
                 visMontoEgreso.Text = $"Monto (egreso): {Logica.MontoEgreso}";
@@ -184,8 +185,8 @@ public partial class FlyOutPageGi : FlyoutPage
                 visDestino.Text = $"Destino: {Logica.Destino}";
                 visDestino.TextColor = Colors.White;
 
-                Logica.DescDelIngreso = "--";
-                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelIngreso}";
+                Logica.DescDelEgreso = "--";
+                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelEgreso}";
                 visDescripcionDelEgreso.TextColor = Colors.White;
 
                 Logica.MontoEgreso = 0;
@@ -219,7 +220,7 @@ public partial class FlyOutPageGi : FlyoutPage
                 visDestino.Text = $"Destino: {Logica.Destino}";
                 visDestino.TextColor = Colors.White;
 
-                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelIngreso}";
+                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelEgreso}";
                 visDescripcionDelEgreso.TextColor = Colors.White;
 
                 visMontoEgreso.Text = $"Monto (egreso): {Logica.MontoEgreso}";
@@ -252,8 +253,8 @@ public partial class FlyOutPageGi : FlyoutPage
                 visDestino.Text = $"Destino: {Logica.Destino}";
                 visDestino.TextColor = Colors.White;
 
-                Logica.DescDelIngreso = "--";
-                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelIngreso}";
+                Logica.DescDelEgreso = "--";
+                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelEgreso}";
                 visDescripcionDelEgreso.TextColor = Colors.White;
 
                 Logica.MontoEgreso = 0;
@@ -284,7 +285,7 @@ public partial class FlyOutPageGi : FlyoutPage
                 visDestino.Text = $"Destino: {Logica.Destino}";
                 visDestino.TextColor = Colors.White;
 
-                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelIngreso}";
+                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelEgreso}";
                 visDescripcionDelEgreso.TextColor = Colors.White;
 
                 visMontoEgreso.Text = $"Monto (egreso): {Logica.MontoEgreso}";
@@ -298,6 +299,11 @@ public partial class FlyOutPageGi : FlyoutPage
         {
             visInformeReferencia.Text = "exportacion exitosa";
             visInformeReferencia.TextColor = Colors.Green;
+            
+           
+            await Logica.GuardarArchMovimientos();
+
+            //await Logica.CompartirArchMovimientos();
         }
         else
         {
@@ -307,5 +313,13 @@ public partial class FlyOutPageGi : FlyoutPage
         //la visualizacion muestra la informacion actual
 
     }
+    private async void irAlArchMovimientos(object sender, EventArgs e)
+    {
+        await Logica.AbrirArchMovimientos();
+    }
 
+    //private async void irAlArchDeudas(object sender, EventArgs e)
+    //{
+    //    await Logica.AbrirArchDeudas();
+    //}
 }
