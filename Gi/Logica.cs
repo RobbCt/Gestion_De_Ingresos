@@ -1,8 +1,7 @@
 ﻿using System;
 namespace Gi;
-//par exportacion al exel
+//para exportacion del exel
 using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
 using System.IO;
 
 
@@ -27,21 +26,29 @@ public static class Logica
         public static string? DescDelEgreso { get; set; }
         public static float MontoEgreso { get; set; }
 
-    //UBICACION DE LOS ARCHIVOS
-    private static readonly string RutaArchMovimientos =
-       Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),"Movimientos.xlsx");
-        //ruta a la carpeta Documents inaccesible interna en Andrid, nombre y tipo del archivo
-
-    //public static readonly string RutaArchMovimientos =
-        //Path.Combine(FileSystem.Current.GetDirectoryPath(Environment.SpecialFolder.MyDocuments),"Movimientos.xlsx");
-        //ruta a la carpeta Documents accesible en Andrid, nombre y tipo del archivo
-
-    private static readonly string RutaArchDeudas =
-        Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            "Movimientos.xlsx"
-        );//ruta a la carpeta Documents accesible en Andrid, nombre y tipo del archivo
-
+    //METODOS DE UBICACION DE LOS ARCHIVOS
+    //AppDataDirectory y consultas al sistema se deben hacer luego de iniciar la app completamente (ej: inicio por primera vez)
+    //y la propiedad como es static se inicializa (pide su valor) antes de iniciar la app completamente (y el sistema no puede devolver su valor, q es la ruta del archivo)
+    //entonces lo q pasa es q pregunto en destiemnpo y la app crashea, y aca entran los metodos...
+    public static string CarpetaArchivos()
+    {
+        var ruta = Path.Combine(FileSystem.AppDataDirectory, "archivos");
+        // Asegurarse de que exista la carpeta en la ruta, sino hacer una carpeta con la ruta
+        if (!Directory.Exists(ruta))
+            Directory.CreateDirectory(ruta);
+        return ruta;
+        //ruta a la carpeta inaccesible interna en Andrid donde se alojan los archivos
+    }
+    public static string RutaArchMovimientos()
+    {
+        return Path.Combine(CarpetaArchivos(), "Movimientos.xlsx");
+        //ruta al archivo, nombre y tipo
+    }
+    public static string RutaArchDeudas()
+    {
+        return Path.Combine(CarpetaArchivos(), "Deudas.xlsx");
+        //ruta al archivo, nombre y tipo
+    }
 
     //METODOS
     public static bool validarReferencia(string fecha,object tipoDePago,string motivo)
@@ -118,7 +125,7 @@ public static class Logica
         try
         {
             //declaracion clase q maneja el exel (obj)
-            XLWorkbook workbook = constructorArch(RutaArchMovimientos);
+            XLWorkbook workbook = constructorArch(RutaArchMovimientos());
 
             //exel maneja hojas, solo necesito una con el nombre de Datos
             // ?? (Izq == NULL -> se ejetuca Der, si no Izq) elegancia de C#
@@ -149,16 +156,16 @@ public static class Logica
             hoja.Cell(ultimaFila, 7).Value = monto;
 
             //actualiza (y si es necesario crea en la ruta) el achivo de movimientos
-            workbook.SaveAs(RutaArchMovimientos);
+            workbook.SaveAs(RutaArchMovimientos());
 
             //quiero ver la ruta exacta del archivo en mi dispositivo
             await Application.Current!.Windows[0].Page!
-            .DisplayAlert("Ruta del archivo", RutaArchMovimientos, "OK");
+            .DisplayAlertAsync("Ruta del archivo", RutaArchMovimientos(), "OK");
 
         }
         catch (Exception ex)
         {
-            await Application.Current!.Windows[0].Page!.DisplayAlert("Error al guardar", ex.Message, "OK");
+            await Application.Current!.Windows[0].Page!.DisplayAlertAsync("Error al guardar", ex.Message, "OK");
         }
 
     }
@@ -170,11 +177,11 @@ public static class Logica
     }
     public static async Task AbrirArchMovimientos()
     {
-        if (!File.Exists(RutaArchMovimientos))
+        if (!File.Exists(RutaArchMovimientos()))
         {
-            await Application.Current!.Windows[0].Page!.DisplayAlert("Archivo no encontrado",
-                                                                     "Todavía no existe el archivo de Movimientos.",
-                                                                     "OK");
+            await Application.Current!.Windows[0].Page!.DisplayAlertAsync("Archivo no encontrado",
+                                                                          "Todavía no existe el archivo de Movimientos.",
+                                                                          "OK");
             return;
         }
 
@@ -184,16 +191,17 @@ public static class Logica
             //esperar q andorid abra el archivo en rt
             await Launcher.Default.OpenAsync(new OpenFileRequest
             {
-                File = new ReadOnlyFile(RutaArchMovimientos)
+                File = new ReadOnlyFile(RutaArchMovimientos())
             });
         }
         catch (Exception ex)
         {
-            await Application.Current!.Windows[0].Page!.DisplayAlert("Error al abrir",ex.Message,"OK");
+            await Application.Current!.Windows[0].Page!.DisplayAlertAsync("Error al abrir",ex.Message,"OK");
         }
     }
 
 
+    
 
 
     //provisorio (futuro boton de compartir exel)

@@ -29,13 +29,13 @@ public partial class TabbedPageGi : TabbedPage
 		{
 			informeReferencia.Text = "Guardado Exitoso";
 			informeReferencia.TextColor = Colors.Green;
-            DisplayAlert("", "Datos correctos guardados", "Aceptar");
+            DisplayAlertAsync("", "Datos correctos guardados", "Aceptar");
         }
 		else
 		{
 			informeReferencia.Text = "Datos Incompletos"; 
 			informeReferencia.TextColor = Colors.Red;
-            DisplayAlert("", "Datos incorrectos", "Aceptar");
+            DisplayAlertAsync("", "Datos incorrectos", "Aceptar");
         }
 	}
 	private void setPropIngreso(object sender, EventArgs e)
@@ -44,13 +44,13 @@ public partial class TabbedPageGi : TabbedPage
 		{
             informeIngreso.Text = "Guardado Exitoso";
             informeIngreso.TextColor = Colors.Green;
-            DisplayAlert("", "Datos correctos guardados", "Aceptar");
+            DisplayAlertAsync("", "Datos correctos guardados", "Aceptar");
         }
 		else
 		{
             informeIngreso.Text = "Datos Incompletos";
             informeIngreso.TextColor = Colors.Red;
-            DisplayAlert("", "Datos incorrectos", "Aceptar");
+            DisplayAlertAsync("", "Datos incorrectos", "Aceptar");
         }
 	}
     private void setPropEgreso(object sender, EventArgs e)
@@ -59,13 +59,13 @@ public partial class TabbedPageGi : TabbedPage
         {
             informeEgreso.Text = "Guardado Exitoso";
             informeEgreso.TextColor = Colors.Green;
-            DisplayAlert("", "Datos correctos guardados", "Aceptar");
+            DisplayAlertAsync("", "Datos correctos guardados", "Aceptar");
         }
         else
         {
             informeEgreso.Text = "Datos Incompletos";
             informeEgreso.TextColor = Colors.Red;
-            DisplayAlert("", "Datos incorrectos", "Aceptar");
+            DisplayAlertAsync("", "Datos incorrectos", "Aceptar");
         }
       
     }
