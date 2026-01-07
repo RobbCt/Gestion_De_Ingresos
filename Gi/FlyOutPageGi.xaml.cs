@@ -33,7 +33,7 @@ public partial class FlyOutPageGi : FlyoutPage
             {
                 //referencia + ingreso validos
 
-                visFecha.Text = visFecha.Text = $"Fecha: {Logica.Fecha.ToString("dd/MM/yyyy")}";
+                visFecha.Text = $"Fecha: {Logica.Fecha.ToString("dd/MM/yyyy")}";
                 visFecha.TextColor = Colors.White;
 
                 visTipoDePago.Text = $"Tipo De Pago: {Logica.TipoDePago}";
@@ -67,7 +67,7 @@ public partial class FlyOutPageGi : FlyoutPage
             {
                 //referencia + egreso validos
 
-                visFecha.Text = visFecha.Text = $"Fecha: {Logica.Fecha.ToString("dd/MM/yyyy")}";
+                visFecha.Text = $"Fecha: {Logica.Fecha.ToString("dd/MM/yyyy")}";
                 visFecha.TextColor = Colors.White;
 
                 visTipoDePago.Text = $"Tipo De Pago: {Logica.TipoDePago}";
@@ -100,7 +100,7 @@ public partial class FlyOutPageGi : FlyoutPage
             {
                 //solo refernecia valida
 
-                visFecha.Text = visFecha.Text = $"Fecha: {Logica.Fecha.ToString("dd/MM/yyyy")}";
+                visFecha.Text = $"Fecha: {Logica.Fecha.ToString("dd/MM/yyyy")}";
                 visFecha.TextColor = Colors.White;
 
                 visTipoDePago.Text = $"Tipo De Pago: {Logica.TipoDePago}";
@@ -132,7 +132,7 @@ public partial class FlyOutPageGi : FlyoutPage
             }
             if (Logica.Ingreso && Logica.Egreso) //solo para visualizar, eliminable
             {
-                visFecha.Text = visFecha.Text = $"Fecha: {Logica.Fecha.ToString("dd/MM/yyyy")}";
+                visFecha.Text = $"Fecha: {Logica.Fecha.ToString("dd/MM/yyyy")}";
                 visFecha.TextColor = Colors.White;
 
                 visTipoDePago.Text = $"Tipo De Pago: {Logica.TipoDePago}";

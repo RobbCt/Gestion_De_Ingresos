@@ -9,7 +9,7 @@ public static class Logica
 {
     //PROPIEDADES
     public static bool Referencia { get; set; } = false;
-        public static DateTime Fecha { get; set; }
+    public static DateTime Fecha { get; set; } = DateTime.Now;
         public static string? TipoDePago { get; set; }
         public static string? Motivo { get; set; }
 
@@ -26,29 +26,6 @@ public static class Logica
         public static string? DescDelEgreso { get; set; }
         public static float MontoEgreso { get; set; }
 
-    //METODOS DE UBICACION DE LOS ARCHIVOS
-    //AppDataDirectory y consultas al sistema se deben hacer luego de iniciar la app completamente (ej: inicio por primera vez)
-    //y la propiedad como es static se inicializa (pide su valor) antes de iniciar la app completamente (y el sistema no puede devolver su valor, q es la ruta del archivo)
-    //entonces lo q pasa es q pregunto en destiemnpo y la app crashea, y aca entran los metodos...
-    public static string CarpetaArchivos()
-    {
-        var ruta = Path.Combine(FileSystem.AppDataDirectory, "archivos");
-        // Asegurarse de que exista la carpeta en la ruta, sino hacer una carpeta con la ruta
-        if (!Directory.Exists(ruta))
-            Directory.CreateDirectory(ruta);
-        return ruta;
-        //ruta a la carpeta inaccesible interna en Andrid donde se alojan los archivos
-    }
-    public static string RutaArchMovimientos()
-    {
-        return Path.Combine(CarpetaArchivos(), "Movimientos.xlsx");
-        //ruta al archivo, nombre y tipo
-    }
-    public static string RutaArchDeudas()
-    {
-        return Path.Combine(CarpetaArchivos(), "Deudas.xlsx");
-        //ruta al archivo, nombre y tipo
-    }
 
     //METODOS
     public static bool validarReferencia(string fecha,object tipoDePago,string motivo)
@@ -119,46 +96,104 @@ public static class Logica
 
         return Egreso;
     }
+
+    //METODOS DE UBICACION DE LOS ARCHIVOS
+    //AppDataDirectory y consultas al sistema se deben hacer luego de iniciar la app completamente (ej: inicio por primera vez)
+    //y la propiedad como es static se inicializa (pide su valor) antes de iniciar la app completamente (y el sistema no puede devolver su valor, q es la ruta del archivo)
+    //entonces lo q pasa es q pregunto en destiemnpo y la app crashea, y aca entran los metodos...
+    public static string CarpetaArchivos()
+    {
+        var ruta = Path.Combine(FileSystem.AppDataDirectory, "archivos");
+        // Asegurarse de que exista la carpeta en la ruta, sino hacer una carpeta con la ruta
+        if (!Directory.Exists(ruta))
+            Directory.CreateDirectory(ruta);
+        return ruta;
+        //ruta a la carpeta inaccesible interna en Andrid donde se alojan los archivos
+    }
+    public static string RutaArchMovimientos()
+    {
+        return Path.Combine(CarpetaArchivos(), "Movimientos.xlsx");
+        //ruta al archivo, nombre y tipo
+    }
+    public static string RutaArchDeudas()
+    {
+        return Path.Combine(CarpetaArchivos(), "Deudas.xlsx");
+        //ruta al archivo, nombre y tipo
+    }
+    public static XLWorkbook AbrirOcrearWorkbook(string rutaArch)
+    {
+        //instancio el XLWorkbook (archivo de exel en memoria temporal) con la
+        //info el archivo existente (la op false podria quitarla, pero prefiero capturar los datos en cualquier caso)
+        return File.Exists(rutaArch) ? new XLWorkbook(rutaArch) : new XLWorkbook();
+    }
+   
+    public static void CrearArchMovimientos()
+    {
+        //crear ArchMovimientos en el arranque limpio (el pirmer inicio)
+        
+        string ruta = RutaArchMovimientos();
+
+        if(!File.Exists(ruta))
+        {
+            //using = el archivo esta en memoria temporal solo dentro de las llaves...
+            using (var workbook = new XLWorkbook())
+            {
+                var hoja = workbook.Worksheets.Add("Datos");
+
+                hoja.Cell(1, 1).Value = "Fecha";
+                hoja.Cell(1, 2).Value = "Tipo De Movimiento";
+                hoja.Cell(1, 3).Value = "Tipo De Pago";
+                hoja.Cell(1, 4).Value = "Motivo";
+                hoja.Cell(1, 5).Value = "Origen/Destino";
+                hoja.Cell(1, 6).Value = "Descripción";
+                hoja.Cell(1, 7).Value = "Monto";
+
+                workbook.SaveAs(ruta);
+            }//...luego de escribirse se libera (estoy buscando optimizar tiempos)
+        }
+    }
     public static async Task GuardarArchMovimientos()
     {
         //alguien hoy me empezo a joder con el trycatch...
         try
         {
             //declaracion clase q maneja el exel (obj)
-            XLWorkbook workbook = constructorArch(RutaArchMovimientos());
+            using (XLWorkbook workbook = AbrirOcrearWorkbook(RutaArchMovimientos()))
+            {
 
-            //exel maneja hojas, solo necesito una con el nombre de Datos
-            // ?? (Izq == NULL -> se ejetuca Der, si no Izq) elegancia de C#
-            var hoja = workbook.Worksheets.FirstOrDefault() ?? workbook.Worksheets.Add("Datos");
+                //exel maneja hojas, solo necesito una con el nombre de Datos
+                // ?? (Izq == NULL -> se ejetuca Der, si no Izq) elegancia de C#
+                var hoja = workbook.Worksheets.FirstOrDefault() ?? workbook.Worksheets.Add("Datos");
 
-            int ultimaFila = hoja.LastRowUsed()?.RowNumber() + 1 ?? 1;
-
-
-            //formato ingreso: fecha|tipoDeMovimiento|tipoDePago|motivo|origen |             |monto|
-            //formato egreso:  fecha|tipoDeMovimiento|tipoDePago|motivo|destino|descDelEgreso|monto|
+                int ultimaFila = hoja.LastRowUsed()?.RowNumber() + 1 ?? 2;
 
 
-            //string fecha listo
-            string tipoMovimiento = Ingreso ? "Ingreso" : "Egreso";
-            //string tipoDePago listo
-            //string motivo listo
-            string origenDestino = Ingreso ? "De: " + Origen : "Hacia: " + Destino;
-            string descDelEgreso = Ingreso ? "-" : DescDelEgreso!; //! para deajar en claro q esta validado
-            float monto = Ingreso ? MontoIngreso : MontoEgreso;
+                //formato ingreso: fecha|tipoDeMovimiento|tipoDePago|motivo|origen |             |monto|
+                //formato egreso:  fecha|tipoDeMovimiento|tipoDePago|motivo|destino|descDelEgreso|monto|
 
-            //escribo los datos en la ultima fila libre
-            hoja.Cell(ultimaFila, 1).Value = Fecha.ToString("dd/MM/yyyy");
-            hoja.Cell(ultimaFila, 2).Value = tipoMovimiento;
-            hoja.Cell(ultimaFila, 3).Value = TipoDePago;
-            hoja.Cell(ultimaFila, 4).Value = Motivo;
-            hoja.Cell(ultimaFila, 5).Value = origenDestino;
-            hoja.Cell(ultimaFila, 6).Value = descDelEgreso;
-            hoja.Cell(ultimaFila, 7).Value = monto;
 
-            //actualiza (y si es necesario crea en la ruta) el achivo de movimientos
-            workbook.SaveAs(RutaArchMovimientos());
+                //string fecha listo
+                string tipoMovimiento = Ingreso ? "Ingreso" : "Egreso";
+                //string tipoDePago listo
+                //string motivo listo
+                string origenDestino = Ingreso ? Origen! : Destino!;
+                string descDelEgreso = Ingreso ? "-" : DescDelEgreso!; //! para deajar en claro q esta validado
+                float monto = Ingreso ? MontoIngreso : MontoEgreso;
 
-            //quiero ver la ruta exacta del archivo en mi dispositivo
+                //escribo los datos en la ultima fila libre
+                hoja.Cell(ultimaFila, 1).Value = Fecha.ToString("dd/MM/yyyy");
+                hoja.Cell(ultimaFila, 2).Value = tipoMovimiento;
+                hoja.Cell(ultimaFila, 3).Value = TipoDePago;
+                hoja.Cell(ultimaFila, 4).Value = Motivo;
+                hoja.Cell(ultimaFila, 5).Value = origenDestino;
+                hoja.Cell(ultimaFila, 6).Value = descDelEgreso;
+                hoja.Cell(ultimaFila, 7).Value = monto;
+
+                //actualiza (y si es necesario crea en la ruta) el achivo de movimientos
+                workbook.SaveAs(RutaArchMovimientos());
+            }
+
+            //(eliminar) quiero ver la ruta exacta del archivo en mi dispositivo
             await Application.Current!.Windows[0].Page!
             .DisplayAlertAsync("Ruta del archivo", RutaArchMovimientos(), "OK");
 
@@ -168,12 +203,6 @@ public static class Logica
             await Application.Current!.Windows[0].Page!.DisplayAlertAsync("Error al guardar", ex.Message, "OK");
         }
 
-    }
-    public static XLWorkbook constructorArch(string rutaArch)
-    {
-        //instancio el XLWorkbook (archivo de exel en memoria temporal) con la
-        //info el archivo existente o uno vacio (si no existe)
-        return File.Exists(rutaArch) ? new XLWorkbook(rutaArch) : new XLWorkbook();
     }
     public static async Task AbrirArchMovimientos()
     {
@@ -200,8 +229,80 @@ public static class Logica
         }
     }
 
+    /*public static void CrearArchDeudas()
+    {
+        //crear ArchMovimientos en el arranque limpio (el pirmer inicio)
 
-    
+        string ruta = RutaArchDeudas();
+
+        if (!File.Exists(ruta))
+        {
+            //using = el archivo esta en memoria temporal solo dentro de las llaves...
+            using (var workbook = new XLWorkbook())
+            {
+                var hoja = workbook.Worksheets.Add("Datos");
+
+                hoja.Cell(1, 1).Value = 
+                hoja.Cell(1, 2).Value = 
+                hoja.Cell(1, 3).Value = 
+                hoja.Cell(1, 4).Value = 
+                hoja.Cell(1, 5).Value = 
+                hoja.Cell(1, 6).Value = 
+                hoja.Cell(1, 7).Value = 
+
+                workbook.SaveAs(ruta);
+            }//...luego de escribirse se libera (estoy buscando optimizar tiempos)
+        }
+    }*/
+    /*public static async Task GuardarArchDeudas()
+    {
+        try
+        {
+            using (XLWorkbook workbook = AbrirOcrearWorkbook(RutaArchMovimientos()))
+            {
+                var hoja = workbook.Worksheets.FirstOrDefault() ?? workbook.Worksheets.Add("Datos");
+                int ultimaFila = hoja.LastRowUsed()?.RowNumber() + 1 ?? 2;
+
+                //formato deuda: fecha|tipoDeMovimiento|tipoDePago|motivo|origen |             |monto|
+               
+                hoja.Cell(ultimaFila, 1).Value = 
+                hoja.Cell(ultimaFila, 2).Value = 
+                hoja.Cell(ultimaFila, 3).Value = 
+                hoja.Cell(ultimaFila, 4).Value = 
+                hoja.Cell(ultimaFila, 5).Value = 
+                hoja.Cell(ultimaFila, 6).Value = 
+                hoja.Cell(ultimaFila, 7).Value = 
+
+                workbook.SaveAs(RutaArchMovimientos());
+            }
+        }
+        catch (Exception ex)
+        {
+            await Application.Current!.Windows[0].Page!.DisplayAlertAsync("Error al guardar", ex.Message, "OK");
+        }
+    }*/
+    /*public static async Task AbrirArchDeudas()
+    {
+        if (!File.Exists(RutaArchDeudas()))
+        {
+            await Application.Current!.Windows[0].Page!.DisplayAlertAsync("Archivo no encontrado",
+                                                                          "Todavía no existe el archivo de Deudas.",
+                                                                          "OK");
+            return;
+        }
+        try
+        {
+            await Launcher.Default.OpenAsync(new OpenFileRequest
+            {
+                File = new ReadOnlyFile(RutaArchMovimientos())
+            });
+        }
+        catch (Exception ex)
+        {
+            await Application.Current!.Windows[0].Page!.DisplayAlertAsync("Error al abrir", ex.Message, "OK");
+        }
+    }*/
+
 
 
     //provisorio (futuro boton de compartir exel)
@@ -219,4 +320,24 @@ public static class Logica
     //        
     //    });
     //}
+
+    //FlyOutPage.cs:
+    //obtener ruta✅
+    //crear exel✅
+    //actualizar ordenadamente el exel✅
+    //abrir exel✅
+    //incluir recurso de plantilla bonita de exel e implementar en el archivo
+    //aunque no estoy seguro de como implenmentar Deudas.xlsx, dejar el codigo listo para su implementacion en todas las formas de Movimientos.xlsx✅
+    //limpiar el evento de exportar🔴1
+
+    //FlyOutPage.xaml:
+    //quitar la visualisacion de todos los datos y dejarle un button de exportar 🔴1
+    //incluir button para compartir exel🔴3
+
+    //TabbedPage.cs:
+    //implementar una grilla de "mas detalles" con un chekbox para el ingreso de varios articulos
+
+    //TabbedPage.xaml:
+    //una vez exportado un movimiento, q todos los entry se borren (y poner en false/cero/null todas las properties por security)🔴2
+
 }
