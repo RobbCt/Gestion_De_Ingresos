@@ -25,7 +25,7 @@ public partial class TabbedPageGi : TabbedPage
     //////#Eventos/////
     private void setPropReferencia(object sender, EventArgs e)
 	{
-		if (Logica.validarReferencia(fecha.Text, tipoDePago.SelectedItem, motivo.Text))
+		if (Logica.ValidarReferencia(fecha.Text, tipoDePago.SelectedItem, motivo.Text))
 		{
 			informeReferencia.Text = "Guardado Exitoso";
 			informeReferencia.TextColor = Colors.Green;
@@ -40,7 +40,7 @@ public partial class TabbedPageGi : TabbedPage
 	}
 	private void setPropIngreso(object sender, EventArgs e)
 	{
-		if (Logica.validarIngreso(origen.Text, montoIngreso.Text))
+		if (Logica.ValidarIngreso(origen.Text, montoIngreso.Text))
 		{
             informeIngreso.Text = "Guardado Exitoso";
             informeIngreso.TextColor = Colors.Green;
@@ -55,7 +55,7 @@ public partial class TabbedPageGi : TabbedPage
 	}
     private void setPropEgreso(object sender, EventArgs e)
     {
-        if (Logica.validarEgreso(destino.Text, descDelGasto.Text, montoEgreso.Text))
+        if (Logica.ValidarEgreso(destino.Text, descDelGasto.Text, montoEgreso.Text))
         {
             informeEgreso.Text = "Guardado Exitoso";
             informeEgreso.TextColor = Colors.Green;

@@ -2,6 +2,9 @@
 namespace Gi;
 //para exportacion del exel
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Bibliography;
+//using Kotlin.Contracts;
+//using Kotlin;
 using System.IO;
 
 
@@ -28,7 +31,7 @@ public static class Logica
 
 
     //METODOS
-    public static bool validarReferencia(string fecha,object tipoDePago,string motivo)
+    public static bool ValidarReferencia(string fecha,object tipoDePago,string motivo)
     {
         bool fechaValida = DateTime.TryParse(fecha, out DateTime auxFecha);
         bool tipoDePagoValida = tipoDePago != null;
@@ -46,7 +49,7 @@ public static class Logica
 
         return Referencia;
     }
-    public static bool validarIngreso(string origen,string monto)
+    public static bool ValidarIngreso(string origen,string monto)
     {
         bool origenValido = !string.IsNullOrWhiteSpace(origen);
         bool montoValido = false;
@@ -68,7 +71,7 @@ public static class Logica
 
         return Ingreso;
     }
-    public static bool validarEgreso(string destino,string descDelGasto,string monto)
+    public static bool ValidarEgreso(string destino,string descDelGasto,string monto)
     {
         bool destinoValido = !string.IsNullOrWhiteSpace(destino);
         bool descDelGastoValido = !string.IsNullOrWhiteSpace(descDelGasto);
@@ -152,7 +155,7 @@ public static class Logica
             }//...luego de escribirse se libera (estoy buscando optimizar tiempos)
         }
     }
-    public static async Task GuardarArchMovimientos()
+    public static Task <(bool estado, string? msj)> GuardarArchMovimientos()
     {
         //alguien hoy me empezo a joder con el trycatch...
         try
@@ -193,27 +196,18 @@ public static class Logica
                 workbook.SaveAs(RutaArchMovimientos());
             }
 
-            //(eliminar) quiero ver la ruta exacta del archivo en mi dispositivo
-            await Application.Current!.Windows[0].Page!
-            .DisplayAlertAsync("Ruta del archivo", RutaArchMovimientos(), "OK");
-
+            return Task.FromResult<(bool estado, string? msj)>((true, null));
         }
         catch (Exception ex)
         {
-            await Application.Current!.Windows[0].Page!.DisplayAlertAsync("Error al guardar", ex.Message, "OK");
+            return Task.FromResult<(bool estado, string? msj)>((false, ex.Message));
         }
-
     }
-    public static async Task AbrirArchMovimientos()
+    public static async Task<(bool esatdo, string? msj)> IrAlArchMovimientos()
     {
         if (!File.Exists(RutaArchMovimientos()))
-        {
-            await Application.Current!.Windows[0].Page!.DisplayAlertAsync("Archivo no encontrado",
-                                                                          "Todavía no existe el archivo de Movimientos.",
-                                                                          "OK");
-            return;
-        }
-
+            return (false, "Archivo Movimientos no encontrado");
+        
         //alguien hoy me empezo a joder con el trycatch...
         try
         {
@@ -222,10 +216,35 @@ public static class Logica
             {
                 File = new ReadOnlyFile(RutaArchMovimientos())
             });
+
+            return (true, null);
         }
         catch (Exception ex)
         {
-            await Application.Current!.Windows[0].Page!.DisplayAlertAsync("Error al abrir",ex.Message,"OK");
+            return (false, ex.Message);
+            //retornar la tupla para separar la UI y back
+        }
+    }
+    public static async Task<(bool estado, string? msj)> CompartirArchMovimientos()
+    {
+        string ruta = RutaArchMovimientos();
+
+        if (!File.Exists(ruta))
+            return (false, "El archivo Movimientos no existe");
+
+        try
+        {
+            await Share.RequestAsync(new ShareFileRequest
+            {
+                Title = "Compartir Movimientos.xlsx",
+                File = new ShareFile(ruta)
+            });
+            return (true, null);
+        }
+        catch (Exception ex)
+        {
+            return (false, ex.Message);
+            //retornar la tupla para separar la UI y back
         }
     }
 
@@ -240,7 +259,7 @@ public static class Logica
             //using = el archivo esta en memoria temporal solo dentro de las llaves...
             using (var workbook = new XLWorkbook())
             {
-                var hoja = workbook.Worksheets.Add("Datos");
+                var hoja = workbook.Worksheets.Add("Historial");
 
                 hoja.Cell(1, 1).Value = 
                 hoja.Cell(1, 2).Value = 
@@ -251,20 +270,19 @@ public static class Logica
                 hoja.Cell(1, 7).Value = 
 
                 workbook.SaveAs(ruta);
-            }//...luego de escribirse se libera (estoy buscando optimizar tiempos)
+            }
         }
     }*/
-    /*public static async Task GuardarArchDeudas()
+    /*public static Task <(bool estado, string? msj)> GuardarArchDeudas()
     {
         try
         {
-            using (XLWorkbook workbook = AbrirOcrearWorkbook(RutaArchMovimientos()))
+            using (XLWorkbook workbook = AbrirOcrearWorkbook(RutaArchDeudas()))
             {
-                var hoja = workbook.Worksheets.FirstOrDefault() ?? workbook.Worksheets.Add("Datos");
+                var hoja = workbook.Worksheets.FirstOrDefault() ?? workbook.Worksheets.Add("Historia");
+
                 int ultimaFila = hoja.LastRowUsed()?.RowNumber() + 1 ?? 2;
 
-                //formato deuda: fecha|tipoDeMovimiento|tipoDePago|motivo|origen |             |monto|
-               
                 hoja.Cell(ultimaFila, 1).Value = 
                 hoja.Cell(ultimaFila, 2).Value = 
                 hoja.Cell(ultimaFila, 3).Value = 
@@ -273,53 +291,81 @@ public static class Logica
                 hoja.Cell(ultimaFila, 6).Value = 
                 hoja.Cell(ultimaFila, 7).Value = 
 
-                workbook.SaveAs(RutaArchMovimientos());
+                workbook.SaveAs(RutaArchDeudas());
             }
+
+            return Task.FromResult<(bool estado, string? msj)>((true, null));
         }
         catch (Exception ex)
         {
-            await Application.Current!.Windows[0].Page!.DisplayAlertAsync("Error al guardar", ex.Message, "OK");
+            return Task.FromResult<(bool estado, string? msj)>((false, ex.Message));
         }
     }*/
-    /*public static async Task AbrirArchDeudas()
+    /*public static async Task<(bool esatdo, string? msj)> irAlArchDeudas()
     {
         if (!File.Exists(RutaArchDeudas()))
-        {
-            await Application.Current!.Windows[0].Page!.DisplayAlertAsync("Archivo no encontrado",
-                                                                          "Todavía no existe el archivo de Deudas.",
-                                                                          "OK");
-            return;
-        }
+            return (false, "Archivo Deudas no encontrado");
+        
         try
         {
             await Launcher.Default.OpenAsync(new OpenFileRequest
             {
-                File = new ReadOnlyFile(RutaArchMovimientos())
+                File = new ReadOnlyFile(RutaArchDeudas())
             });
+
+            return (true, null);
         }
         catch (Exception ex)
         {
-            await Application.Current!.Windows[0].Page!.DisplayAlertAsync("Error al abrir", ex.Message, "OK");
+            return (false, ex.Message);
+        }
+    }*/
+    /*public static async Task<(bool estado, string? msj)> CompartirArchDeudas()
+    {
+        string ruta = Path.Combine(FileSystem.AppDataDirectory, "Deudas.xlsx");
+
+        if (!File.Exists(ruta))
+            return (false, "El archivo Deudas no existe");
+
+        try
+        {
+            await Share.RequestAsync(new ShareFileRequest
+            {
+                Title = "Compartir Deudas.xlsx",
+                File = new ShareFile(ruta)
+            });
+            return (true, null);
+        }
+        catch (Exception ex)
+        {
+            return (false, ex.Message);
         }
     }*/
 
+    public static void ResetearMovimiento()
+    {
+        // Referencia
+        Referencia = false;
+        Fecha = DateTime.Now;
+        TipoDePago = null;
+        Motivo = null;
+
+        // Ingreso
+        Ingreso = false;
+        Origen = null;
+        MontoIngreso = 0f;
+
+        // Egreso
+        Egreso = false;
+        Destino = null;
+        DescDelEgreso = null;
+        MontoEgreso = 0f;
+    }
 
 
-    //provisorio (futuro boton de compartir exel)
-    //public static async Task CompartirArchMovimientos()
-    //{
-    //    string ruta = Path.Combine(FileSystem.AppDataDirectory, "Movimientos.xlsx");
-    //
-    //    if (!File.Exists(ruta))
-    //        return;
-    //
-    //    await Share.RequestAsync(new ShareFileRequest
-    //    {
-    //        Title = "Exportar movimientos",
-    //        File = new ShareFile(ruta)
-    //        
-    //    });
-    //}
+
+
+
 
     //FlyOutPage.cs:
     //obtener ruta✅
@@ -328,14 +374,16 @@ public static class Logica
     //abrir exel✅
     //incluir recurso de plantilla bonita de exel e implementar en el archivo
     //aunque no estoy seguro de como implenmentar Deudas.xlsx, dejar el codigo listo para su implementacion en todas las formas de Movimientos.xlsx✅
-    //limpiar el evento de exportar🔴1
+    //limpiar el evento de exportar
 
     //FlyOutPage.xaml:
-    //quitar la visualisacion de todos los datos y dejarle un button de exportar 🔴1
-    //incluir button para compartir exel🔴3
+    //quitar la visualisacion de todos los datos en el flyout
+    //dejarle un button de exportar ✅
+    //incluir button para compartir exel✅
 
     //TabbedPage.cs:
     //implementar una grilla de "mas detalles" con un chekbox para el ingreso de varios articulos
+    //hacer un ViewModel a cada pestana de tabbed, bindear todos los entrys🔴1
 
     //TabbedPage.xaml:
     //una vez exportado un movimiento, q todos los entry se borren (y poner en false/cero/null todas las properties por security)🔴2

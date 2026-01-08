@@ -39,15 +39,36 @@
 
                 </Border>
 
-                <!--Item boton exel-->
+                <!--Item boton exportar datos-->
                 <Button 
-                 Text="Ir al archivo"  ImageSource="exel.svg"
+                 Text="Exportar"  ImageSource="exel.svg"
                  TextColor="{StaticResource Secondary}" 
                  FontSize="Large" Margin="0,8,0,0"
                  HorizontalOptions="Fill"
                  Background="{StaticResource Terciary}"
                  FontAttributes="None"
+                 Clicked="exportarArchMovimientos"/>
+
+
+                <!--Item boton abrir exel-->
+                <Button 
+                 Text="Ir al archivo"  ImageSource="exportar.svg"
+                 TextColor="{StaticResource Secondary}" 
+                 FontSize="Large" Margin="0,0,0,0"
+                 HorizontalOptions="Fill"
+                 Background="{StaticResource Terciary}"
+                 FontAttributes="None"
                  Clicked="irAlArchMovimientos"/>
+                
+                <!--Item boton compartir exel-->
+                <Button 
+                 Text="Compartir"  ImageSource="compartir.svg"
+                 TextColor="{StaticResource Secondary}" 
+                 FontSize="Large" Margin="0,0,0,0"
+                 HorizontalOptions="Fill"
+                 Background="{StaticResource Terciary}"
+                 FontAttributes="None"
+                 Clicked="compartirArchMovimientos"/>
                 
                 <!--Item boton deudas (proximamente)-->
                 <Button 
@@ -72,14 +93,6 @@
                 
                 <!--/////ESPACIO PARA LA VISUALIZACION DE DATOS VALIDOS INGRESADOS/////-->
                 <StackLayout BackgroundColor="{StaticResource Primary}">
-
-                    <Button
-                     Text="DATOS VALIDADOS" Clicked="visualizarTodosLosDatos"
-                     FontSize="Large" FontAttributes="Bold"
-                     HorizontalOptions="Center"  Margin="0,10,0,0"
-                     BackgroundColor="{StaticResource Primary}"
-                     TextColor="{StaticResource Secondary}"
-                     />
                     
                     <Label x:Name="visFecha" Text="Fecha: --" FontSize="Medium" TextColor="White" Margin="10,20,0,10"/>
                     <Label x:Name="visTipoDePago" Text="Tipo De Pago: --" FontSize="Medium" TextColor="White" Margin="10,0,0,10"/>
@@ -92,7 +105,7 @@
 
                     <!--informe del guardado-->
                     <Label 
-                     x:Name="visInformeReferencia" Text="(estado de validacion)" FontSize="Medium"
+                     x:Name="visInformeReferencia" Text="[estado de validacion]" FontSize="Medium"
                      VerticalOptions="Center" Margin="0,10,0,10"
                      HorizontalOptions="Center" TextColor="White"/>
 

@@ -17,13 +17,21 @@ public partial class FlyOutPageGi : FlyoutPage
             Command = new Command(OnMenuButtonClicked),
         });
     }
-    //////#EVENTOS/////
+    private async Task manejarExepciones((bool estado,string? msj) resultado)
+    {
+        if (resultado.estado)
+            await Application.Current!.Windows[0].Page!.DisplayAlertAsync("Éxito", resultado.msj, "Aceptar");
+        else
+            await Application.Current!.Windows[0].Page!.DisplayAlertAsync("Error", resultado.msj, "Aceptar");
+    }
     private void OnMenuButtonClicked()
     {
         //Abre el Flyout al presionar el botón del toolbar
         IsPresented = !IsPresented;
     }
-    private async void visualizarTodosLosDatos(object sender, EventArgs e)
+
+    //////#EVENTOS/////
+    private async void exportarArchMovimientos(object sender, EventArgs e)
     {
         bool band = false;
 
@@ -300,26 +308,58 @@ public partial class FlyOutPageGi : FlyoutPage
             visInformeReferencia.Text = "exportacion exitosa";
             visInformeReferencia.TextColor = Colors.Green;
             
-           
-            await Logica.GuardarArchMovimientos();
+            var resultado = await Logica.GuardarArchMovimientos();
+            
+            if (resultado.estado)
+                await manejarExepciones((true, "Archivo Movimientos guardado"));
+            else
+                await manejarExepciones(resultado);
 
-            //await Logica.CompartirArchMovimientos();
+            Logica.ResetearMovimiento();
         }
         else
         {
             visInformeReferencia.Text = "exportacion fallida";
             visInformeReferencia.TextColor = Colors.Red;
+
+            await manejarExepciones((false, "No se pudo exportar el archivo, complete los campos correspondientes"));
         }
         //la visualizacion muestra la informacion actual
 
     }
     private async void irAlArchMovimientos(object sender, EventArgs e)
     {
-        await Logica.AbrirArchMovimientos();
+        var resultado = await Logica.IrAlArchMovimientos();
+        await manejarExepciones(resultado);
+    }
+    private async void compartirArchMovimientos(object sender, EventArgs e)
+    {
+        var resultado = await Logica.CompartirArchMovimientos();
+        await manejarExepciones(resultado);
     }
 
-    //private async void irAlArchDeudas(object sender, EventArgs e)
-    //{
-    //    await Logica.AbrirArchDeudas();
-    //}
+
+    /*private async void exportarArchDeudas(object sender, EventArgs e)
+    {
+        //fijate validaciones de datos antes de poder eportar
+    
+        var resultado = await Logica.GuardarArchDeudas();
+
+        if (resultado.estado)
+            await Application.Current!.Windows[0].Page!.DisplayAlertAsync("Éxito", "Archivo Deudas guardado correctamente", "OK");
+        else
+            await manejarExepciones(resultado);
+    }*/
+    /*private async void irAlArchDeudas(object sender, EventArgs e)
+    {
+        var resultado = await Logica.irAlArchDeudas();
+        await manejarExepciones(resultado);
+    }*/
+    /*private async void compartirArchDeudas(object sender, EventArgs e)
+    {
+        var resultado = await Logica.CompartirArchDeudas();
+        await manejarExepciones(resultado);
+    }*/
+
+
 }
