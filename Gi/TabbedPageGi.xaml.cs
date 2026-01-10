@@ -1,29 +1,15 @@
+using Gi.ViewModels;
+
 namespace Gi;
 
 public partial class TabbedPageGi : TabbedPage
 {
-	//lista para las opciones
-	public List<string> TiposDePagos { get; set; }
-	//opcion seleccionada
-	public string? TiposDePagosSelec { get; set; }
+    public TabbedPageGi()
+    {
+        InitializeComponent();
+    }
 
-	public TabbedPageGi()
-	{
-		InitializeComponent();
-
-		//opciones de tipo de pago
-		TiposDePagos = new List<string>
-		{
-			"Efectivo",
-			"Transferencia",
-			"Tarjeta",
-			"Otro",
-		};
-		BindingContext = this;
-	}
-
-    //////#Eventos/////
-    private void setPropReferencia(object sender, EventArgs e)
+    /*private void setPropReferencia(object sender, EventArgs e)
 	{
 		if (Logica.ValidarReferencia(fecha.Text, tipoDePago.SelectedItem, motivo.Text))
 		{
@@ -37,23 +23,23 @@ public partial class TabbedPageGi : TabbedPage
 			informeReferencia.TextColor = Colors.Red;
             DisplayAlertAsync("", "Datos incorrectos", "Aceptar");
         }
-	}
-	private void setPropIngreso(object sender, EventArgs e)
-	{
-		if (Logica.ValidarIngreso(origen.Text, montoIngreso.Text))
-		{
+	}*/
+    /*private void setPropIngreso(object sender, EventArgs e)
+    {
+        if (Logica.ValidarIngreso(origen.Text, montoIngreso.Text))
+        {
             informeIngreso.Text = "Guardado Exitoso";
             informeIngreso.TextColor = Colors.Green;
             DisplayAlertAsync("", "Datos correctos guardados", "Aceptar");
         }
-		else
-		{
+        else
+        {
             informeIngreso.Text = "Datos Incompletos";
             informeIngreso.TextColor = Colors.Red;
             DisplayAlertAsync("", "Datos incorrectos", "Aceptar");
         }
-	}
-    private void setPropEgreso(object sender, EventArgs e)
+    }*/
+    /*private void setPropEgreso(object sender, EventArgs e)
     {
         if (Logica.ValidarEgreso(destino.Text, descDelGasto.Text, montoEgreso.Text))
         {
@@ -67,7 +53,5 @@ public partial class TabbedPageGi : TabbedPage
             informeEgreso.TextColor = Colors.Red;
             DisplayAlertAsync("", "Datos incorrectos", "Aceptar");
         }
-      
-    }
-
+    }*/
 }

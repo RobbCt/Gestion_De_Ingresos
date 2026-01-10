@@ -70,7 +70,7 @@ public partial class FlyOutPageGi : FlyoutPage
 
                 band = true;
             }
-            
+
             if (!Logica.Ingreso && Logica.Egreso)
             {
                 //referencia + egreso validos
@@ -102,7 +102,7 @@ public partial class FlyOutPageGi : FlyoutPage
                 visMontoEgreso.TextColor = Colors.White;
 
                 band = true;
-            }    
+            }
 
             if (!Logica.Ingreso && !Logica.Egreso) //solo para visualizar, eliminable
             {
@@ -202,7 +202,7 @@ public partial class FlyOutPageGi : FlyoutPage
                 visMontoEgreso.TextColor = Colors.White;
 
             }
-            if(!Logica.Ingreso && Logica.Egreso) //solo para visualizar, eliminable
+            if (!Logica.Ingreso && Logica.Egreso) //solo para visualizar, eliminable
             {
                 //solo egreso valido
 
@@ -234,7 +234,7 @@ public partial class FlyOutPageGi : FlyoutPage
                 visMontoEgreso.Text = $"Monto (egreso): {Logica.MontoEgreso}";
                 visMontoEgreso.TextColor = Colors.White;
             }
-            if(!Logica.Ingreso && !Logica.Egreso) //solo para visualizar, eliminable
+            if (!Logica.Ingreso && !Logica.Egreso) //solo para visualizar, eliminable
             {
                 //nada valido
 
@@ -307,9 +307,9 @@ public partial class FlyOutPageGi : FlyoutPage
         {
             visInformeReferencia.Text = "exportacion exitosa";
             visInformeReferencia.TextColor = Colors.Green;
-            
+
             var resultado = await Logica.GuardarArchMovimientos();
-            
+
             if (resultado.estado)
                 await manejarExepciones((true, "Archivo Movimientos guardado"));
             else
@@ -317,12 +317,19 @@ public partial class FlyOutPageGi : FlyoutPage
 
             Logica.ResetearMovimiento();
         }
-        else
+        else if (Logica.Referencia && Logica.Ingreso && Logica.Egreso)//de las combinaciones validas, completo las 3
         {
             visInformeReferencia.Text = "exportacion fallida";
             visInformeReferencia.TextColor = Colors.Red;
 
-            await manejarExepciones((false, "No se pudo exportar el archivo, complete los campos correspondientes"));
+            await manejarExepciones((false, "No se pudo exportar el archivo, complete solo los campos correspondientes"));
+        }
+        else //des las combinaciones validas, completo 1
+        {
+            visInformeReferencia.Text = "exportacion fallida";
+            visInformeReferencia.TextColor = Colors.Red;
+
+            await manejarExepciones((false, "No se pudo exportar el archivo, complete los campos correspondientes minimos"));
         }
         //la visualizacion muestra la informacion actual
 
@@ -330,12 +337,14 @@ public partial class FlyOutPageGi : FlyoutPage
     private async void irAlArchMovimientos(object sender, EventArgs e)
     {
         var resultado = await Logica.IrAlArchMovimientos();
-        await manejarExepciones(resultado);
+        if (!resultado.estado)
+            await manejarExepciones(resultado);
     }
     private async void compartirArchMovimientos(object sender, EventArgs e)
     {
         var resultado = await Logica.CompartirArchMovimientos();
-        await manejarExepciones(resultado);
+        if(!resultado.estado)
+             await manejarExepciones(resultado);
     }
 
 

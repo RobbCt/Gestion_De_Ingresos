@@ -3,6 +3,7 @@ namespace Gi;
 //para exportacion del exel
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Bibliography;
+using Gi.ViewModels;
 //using Kotlin.Contracts;
 //using Kotlin;
 using System.IO;
@@ -203,7 +204,7 @@ public static class Logica
             return Task.FromResult<(bool estado, string? msj)>((false, ex.Message));
         }
     }
-    public static async Task<(bool esatdo, string? msj)> IrAlArchMovimientos()
+    public static async Task<(bool estado, string? msj)> IrAlArchMovimientos()
     {
         if (!File.Exists(RutaArchMovimientos()))
             return (false, "Archivo Movimientos no encontrado");
@@ -342,24 +343,39 @@ public static class Logica
         }
     }*/
 
-    public static void ResetearMovimiento()
+
+    public static event Action? ResetGlobalSolicitado;
+
+    public static void ResetearReferencia()
     {
-        // Referencia
         Referencia = false;
         Fecha = DateTime.Now;
         TipoDePago = null;
         Motivo = null;
+    }
 
-        // Ingreso
+    public static void ResetearIngreso()
+    {
         Ingreso = false;
         Origen = null;
-        MontoIngreso = 0f;
+        MontoIngreso = 0;
+    }
 
-        // Egreso
+    public static void ResetearEgreso()
+    {
         Egreso = false;
         Destino = null;
         DescDelEgreso = null;
-        MontoEgreso = 0f;
+        MontoEgreso = 0;
+    }
+
+    public static void ResetearMovimiento()
+    {
+        ResetearReferencia();
+        ResetearIngreso();
+        ResetearEgreso();
+
+        ResetGlobalSolicitado?.Invoke();
     }
 
 
@@ -372,9 +388,9 @@ public static class Logica
     //crear exel✅
     //actualizar ordenadamente el exel✅
     //abrir exel✅
-    //incluir recurso de plantilla bonita de exel e implementar en el archivo
+    //incluir recurso de plantilla bonita de exel e implementar en el archivo🔴3
     //aunque no estoy seguro de como implenmentar Deudas.xlsx, dejar el codigo listo para su implementacion en todas las formas de Movimientos.xlsx✅
-    //limpiar el evento de exportar
+    //limpiar el evento de exportar (me refiero a la banda de if q tiene)
 
     //FlyOutPage.xaml:
     //quitar la visualisacion de todos los datos en el flyout
@@ -382,10 +398,15 @@ public static class Logica
     //incluir button para compartir exel✅
 
     //TabbedPage.cs:
-    //implementar una grilla de "mas detalles" con un chekbox para el ingreso de varios articulos
-    //hacer un ViewModel a cada pestana de tabbed, bindear todos los entrys🔴1
+    //implementar una grilla de "mas detalles" con un chekbox para el ingreso de varios articulos🔴2
+    //hacer un ViewModel a cada pestana de tabbed, bindear todos los entrys✅
 
     //TabbedPage.xaml:
-    //una vez exportado un movimiento, q todos los entry se borren (y poner en false/cero/null todas las properties por security)🔴2
+    //incluir button resetear en cada pestana✅
+    //bindear las pestana del TabbedPage✅
+    //una vez exportado un movimiento, q todos los entry se borren (y poner en false/cero/null todas las properties por security)✅
 
+    //FlyOutPage.cs:
+    //hcaer/encontrar un algoritmo mas eficiente para encontrar las posibles combinaciones para poder exportar
+    //sin tantos if🔴1
 }

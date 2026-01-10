@@ -16,28 +16,65 @@
              <!-- Color cuando no está seleccionado -->
     
     
-    <!--pestana de referencia-->
+    <!--pestana de REFERENCIA-->
     <ContentPage Title="REFERENCIA" IconImageSource="referencia.png"
-                 BackgroundColor = "Black">
+                 BackgroundColor = "Black" xmlns:viewModels="clr-namespace:Gi.ViewModels">
+
+        <!--view model referencia-->
+        <ContentPage.BindingContext>
+            <viewModels:ReferenciaViewModel />
+        </ContentPage.BindingContext>
 
         <!--distribucon vertical de la pestana de referencia-->
         <StackLayout Spacing="10">
 
-            <!--borde para titulo de "ingresar"-->
-            <Border BackgroundColor="{StaticResource Terciary}"
-                    WidthRequest="145" HeightRequest="40"
-                    StrokeShape="RoundRectangle 5"
-                    Stroke="{StaticResource Terciary}"
-                    Margin="0,20,0,0" VerticalOptions="Center">
+            <!--distribucion horizonatal "INGRESAR" y button de reset page-->
+            <Grid Margin="0,20,0,0" VerticalOptions="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-                <!--texto para titulo de "ingresar"-->
-                <Label 
-                 Text="INGRESAR" FontSize="Large"
-                 HorizontalOptions="Center" VerticalOptions="Center"
-                 FontAttributes="Bold" TextColor="{StaticResource Secondary}"
-                 BackgroundColor="{StaticResource Terciary}"/>
+                <!-- Título "INGRESAR" -->
+                <Border Grid.Column="1"
+                 BackgroundColor="{StaticResource Terciary}"
+                 WidthRequest="145" HeightRequest="40"
+                 StrokeShape="RoundRectangle 5"
+                 Stroke="{StaticResource Terciary}"
+                 HorizontalOptions="Center">
+                   
+                    <Label Text="INGRESAR" FontSize="Large"
+                     HorizontalOptions="Center" VerticalOptions="Center"
+                     FontAttributes="Bold" TextColor="{StaticResource Secondary}"
+                     BackgroundColor="{StaticResource Terciary}"/>
+                
+                </Border>
 
-            </Border>
+                <!-- Botón redondeado a la derecha -->
+                <Border Grid.Column="2"
+                 BackgroundColor="{StaticResource Terciary}"
+                 HorizontalOptions="End"
+                 Margin="0,0,15,0"
+                 WidthRequest="40" 
+                 HeightRequest="40">
+
+                    <!--engorde (redondes)-->
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="100"/>
+                    </Border.StrokeShape>
+
+                    <!--bindeo-->
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ResetearReferenciaCommand}"/>
+                    </Border.GestureRecognizers>
+
+                    <!--imagen boton-->
+                    <Image Source="deletepage.svg" WidthRequest="27" HeightRequest="27"/>
+
+                </Border>
+                
+            </Grid>
 
             <!--borde para titulo de "fecha"-->
             <Border BackgroundColor="{StaticResource Terciary}"
@@ -57,7 +94,7 @@
 
             <!--espacio para ingreso por teclado de "fecha"-->
             <Entry 
-             x:Name="fecha" Placeholder="Ej: 19/03/2004" FontAttributes="None"
+             Placeholder="Ej: 19/03/2004" Text="{Binding Fecha}" FontAttributes="None"
              Margin="10,10,10,0" FontSize="Large" Keyboard="Url"/>
 
             <!--borde para titulo de "tipo de pago"-->
@@ -78,10 +115,10 @@
 
             <!--espacio para seleccion de opciones de "tipo de pago"-->
             <Picker 
-             x:Name="tipoDePago" Title="Elija una opción . . ." 
+             Title="Elija una opción . . ." 
              FontSize="Large" Margin="10,10,10,0" 
              ItemsSource="{Binding TiposDePagos}"
-             SelectedItem="{Binding TiposDePagosSelec}"/>
+             SelectedItem="{Binding TipoDePago}"/>
 
             <!--borde para titulo de "motivo"-->
             <Border BackgroundColor="{StaticResource Terciary}"
@@ -101,13 +138,13 @@
 
             <!--espacio para ingreso de la descripcion en "motivo"-->
             <Editor 
-             x:Name="motivo" Placeholder="¿A qué se debe este movimiento? (categoría)"
-             FontSize="Large" Margin="10,10,10,0"
+             Placeholder="¿A qué se debe este movimiento? (categoría)"
+             Text="{Binding Motivo}" FontSize="Large" Margin="10,10,10,0"
              Keyboard="Chat" HeightRequest="100"/>
 
             <!--boton para guardar y validar los datos ingresados-->
             <Button
-             Text="Guardar" Clicked="setPropReferencia"
+             Text="Guardar" Command="{Binding GuardarReferenciaCommand}"
              FontSize="Large" FontAttributes="Bold"
              HorizontalOptions="Center"
              BackgroundColor="{StaticResource Terciary}"
@@ -116,7 +153,8 @@
 
             <!--informe del guardado-->
             <Label 
-             x:Name="informeReferencia" Text="" 
+             Text="{Binding Informe}" 
+             TextColor="{Binding ColorInforme}"
              VerticalOptions="Center"
              HorizontalOptions="Center"/>
 
@@ -130,26 +168,64 @@
 
 
     <!--pestana de ingreso-->
-    <ContentPage Title="INGRESO" IconImageSource="ingreso2.png">
+    <ContentPage Title="INGRESO" IconImageSource="ingreso2.png" 
+                 BackgroundColor = "Black" xmlns:viewModels="clr-namespace:Gi.ViewModels">
+
+        <!--view model ingreso-->
+        <ContentPage.BindingContext>
+            <viewModels:IngresoViewModel />
+        </ContentPage.BindingContext>
 
         <!--distribucion vertical de la pestana ingreso-->
         <StackLayout Spacing="10">
+
+            <!--distribucion horizonatal "INGRESAR" y button de reset page-->
+            <Grid Margin="0,20,0,0" VerticalOptions="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Título "INGRESAR" -->
+                <Border Grid.Column="1"
+                 BackgroundColor="{StaticResource Terciary}"
+                 WidthRequest="145" HeightRequest="40"
+                 StrokeShape="RoundRectangle 5"
+                 Stroke="{StaticResource Terciary}"
+                 HorizontalOptions="Center">
+
+                    <Label Text="INGRESAR" FontSize="Large"
+                     HorizontalOptions="Center" VerticalOptions="Center"
+                     FontAttributes="Bold" TextColor="{StaticResource Secondary}"
+                     BackgroundColor="{StaticResource Terciary}"/>
             
-            <!--borde para titulo de "ingresar"-->
-            <Border BackgroundColor="{StaticResource Terciary}"
-                    WidthRequest="145" HeightRequest="40"
-                    StrokeShape="RoundRectangle 5"
-                    Stroke="{StaticResource Terciary}"
-                    Margin="0,20,0,0" VerticalOptions="Center">
+                </Border>
 
-                <!--texto para titulo de "ingresar"-->
-                <Label 
-                 Text="INGRESAR" FontSize="Large"
-                 HorizontalOptions="Center" VerticalOptions="Center"
-                 FontAttributes="Bold" TextColor="{StaticResource Secondary}"
-                 BackgroundColor="{StaticResource Terciary}"/>
+                <!-- Botón redondeado a la derecha -->
+                <Border Grid.Column="2"
+                 BackgroundColor="{StaticResource Terciary}"
+                 HorizontalOptions="End"
+                 Margin="0,0,15,0"
+                 WidthRequest="40" 
+                     HeightRequest="40">
 
-            </Border>
+                    <!--engorde (redondes)-->
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="100"/>
+                    </Border.StrokeShape>
+
+                    <!--bindeo-->
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ResetearIngresoCommand}"/>
+                    </Border.GestureRecognizers>
+
+                    <!--imagen boton-->
+                    <Image Source="deletepage.svg" WidthRequest="27" HeightRequest="27"/>
+
+                </Border>
+
+            </Grid>
 
             <!--borde para titulo de "origen"-->
             <Border BackgroundColor="{StaticResource Terciary}"
@@ -169,7 +245,7 @@
 
             <!--espacio para ingreso por teclado de "origen"-->
             <Entry 
-             x:Name="origen" Placeholder="¿Quién envío este ingreso?" FontAttributes="None"
+             Text="{Binding Origen}" Placeholder="¿Quién envío este ingreso?" FontAttributes="None"
              Margin="10,10,10,0" FontSize="Large" Keyboard="Text"/>
 
             <!--borde para titulo de "Monto"-->
@@ -190,12 +266,12 @@
 
             <!--espacio para ingreso por teclado de "monto"-->
             <Entry 
-             x:Name="montoIngreso" Placeholder="00,0$" FontAttributes="None"
+             Text="{Binding Monto}" Placeholder="00,0$" FontAttributes="None"
              Margin="10,10,10,0" FontSize="Large" Keyboard="Numeric"/>
 
             <!--boton para guardar y validar los datos ingresados-->
             <Button
-             Text="Guardar" Clicked="setPropIngreso"
+             Text="Guardar" Command="{Binding GuardarIngresoCommand}"
              FontSize="Large" FontAttributes="Bold"
              HorizontalOptions="Center"
              BackgroundColor="{StaticResource Terciary}"
@@ -204,7 +280,7 @@
 
             <!--informe del guardado-->
             <Label 
-             x:Name="informeIngreso" Text="" 
+             Text="{Binding Informe}" TextColor="{Binding ColorInforme}" 
              VerticalOptions="Center"
              HorizontalOptions="Center"/>
 
@@ -219,26 +295,64 @@
 
 
     <!--pestana de egreso-->
-    <ContentPage Title="EGRESO" IconImageSource="egreso.png">
+    <ContentPage Title="EGRESO" IconImageSource="egreso.png"
+                 BackgroundColor = "Black" xmlns:viewModels="clr-namespace:Gi.ViewModels">
+
+        <!--view model egreso-->
+        <ContentPage.BindingContext>
+            <viewModels:EgresoViewModel />
+        </ContentPage.BindingContext>
 
         <!--distribucion vertical de la pestana egreso-->
         <StackLayout Spacing="10">
 
-            <!--borde para titulo de "ingresar"-->
-            <Border BackgroundColor="{StaticResource Terciary}"
-             WidthRequest="145" HeightRequest="40"
-             StrokeShape="RoundRectangle 5"
-             Stroke="{StaticResource Terciary}"
-             Margin="0,20,0,0" VerticalOptions="Center">
+            <!--distribucion horizonatal "INGRESAR" y button de reset page-->
+            <Grid Margin="0,20,0,0" VerticalOptions="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-                <!--texto para titulo de "ingresar"-->
-                <Label 
-                 Text="INGRESAR" FontSize="Large"
-                 HorizontalOptions="Center" VerticalOptions="Center"
-                 FontAttributes="Bold" TextColor="{StaticResource Secondary}"
-                 BackgroundColor="{StaticResource Terciary}"/>
+                <!-- Título "INGRESAR" -->
+                <Border Grid.Column="1"
+                 BackgroundColor="{StaticResource Terciary}"
+                 WidthRequest="145" HeightRequest="40"
+                 StrokeShape="RoundRectangle 5"
+                 Stroke="{StaticResource Terciary}"
+                 HorizontalOptions="Center">
 
-            </Border>
+                    <Label Text="INGRESAR" FontSize="Large"
+                     HorizontalOptions="Center" VerticalOptions="Center"
+                     FontAttributes="Bold" TextColor="{StaticResource Secondary}"
+                     BackgroundColor="{StaticResource Terciary}"/>
+
+                </Border>
+
+                <!-- Botón redondeado a la derecha -->
+                <Border Grid.Column="2"
+                 BackgroundColor="{StaticResource Terciary}"
+                 HorizontalOptions="End"
+                 Margin="0,0,15,0"
+                 WidthRequest="40" 
+                 HeightRequest="40">
+
+                    <!--engorde (redondes)-->
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="100"/>
+                    </Border.StrokeShape>
+
+                    <!--bindeo-->
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ResetearEgresoCommand}"/>
+                    </Border.GestureRecognizers>
+
+                    <!--imagen boton-->
+                    <Image Source="deletepage.svg" WidthRequest="27" HeightRequest="27"/>
+
+                </Border>
+
+            </Grid>
 
             <!--borde para titulo de "destino"-->
             <Border BackgroundColor="{StaticResource Terciary}"
@@ -258,7 +372,7 @@
 
             <!--espacio para ingreso por teclado de "destino"-->
             <Entry 
-             x:Name="destino" Placeholder="¿Quién recibió este egreso?" FontAttributes="None"
+             Text="{Binding Destino}" Placeholder="¿Quién recibió este egreso?" FontAttributes="None"
              Margin="10,10,10,0" FontSize="Large" Keyboard="Text"/>
 
             <!--borde para titulo de "descrpcion del gasto"-->
@@ -279,7 +393,7 @@
 
             <!--espacio para ingreso por teclado de "descrpcion del gasto"-->
             <Entry 
-             x:Name="descDelGasto" Placeholder="¿En qué se gastó? (opcional)" FontAttributes="None"
+             Text="{Binding Descripcion}" Placeholder="¿En qué se gastó? (opcional)" FontAttributes="None"
              Margin="10,10,10,0" FontSize="Large" Keyboard="Text"/>
 
             <!--borde para titulo de "monto"-->
@@ -300,12 +414,12 @@
 
             <!--espacio para ingreso por teclado de "monto"-->
             <Entry 
-             x:Name="montoEgreso" Placeholder="00,0$" FontAttributes="None"
+             Text="{Binding Monto}" Placeholder="00,0$" FontAttributes="None"
              Margin="10,10,10,0" FontSize="Large" Keyboard="Numeric"/>
 
             <!--boton para guardar y validar los datos ingresados-->
             <Button
-             Text="Guardar" Clicked="setPropEgreso"
+             Text="Guardar" Command="{Binding GuardarEgresoCommand}"
              FontSize="Large" FontAttributes="Bold"
              HorizontalOptions="Center"
              BackgroundColor="{StaticResource Terciary}"
@@ -314,7 +428,7 @@
 
             <!--informe del guardado-->
             <Label 
-             x:Name="informeEgreso" Text="" 
+             Text="{Binding Informe}" TextColor="{Binding ColorInforme}" 
              VerticalOptions="Center"
              HorizontalOptions="Center"/>
 
