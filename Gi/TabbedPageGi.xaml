@@ -26,10 +26,10 @@
         </ContentPage.BindingContext>
 
         <!--distribucon vertical de la pestana de referencia-->
-        <StackLayout Spacing="10">
+        <VerticalStackLayout Spacing="10" HorizontalOptions="Fill">
 
             <!--distribucion horizonatal "INGRESAR" y button de reset page-->
-            <Grid Margin="0,20,0,0" VerticalOptions="Center">
+            <Grid HorizontalOptions="Fill" Margin="0,20,0,0" VerticalOptions="Center">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
@@ -158,7 +158,7 @@
              VerticalOptions="Center"
              HorizontalOptions="Center"/>
 
-        </StackLayout>
+        </VerticalStackLayout>
         
     </ContentPage>
 
@@ -177,15 +177,35 @@
         </ContentPage.BindingContext>
 
         <!--distribucion vertical de la pestana ingreso-->
-        <StackLayout Spacing="10">
+        <VerticalStackLayout Spacing="10" HorizontalOptions="Fill">
 
             <!--distribucion horizonatal "INGRESAR" y button de reset page-->
-            <Grid Margin="0,20,0,0" VerticalOptions="Center">
+            <Grid  HorizontalOptions="Fill" Margin="0,20,0,0" VerticalOptions="Center">
+
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
+
+                <!--button "detalles" IZQUIERDA  -->
+                <HorizontalStackLayout
+                 Grid.Column="0"
+                 Spacing="5"
+                 HorizontalOptions="Start"
+                 VerticalOptions="Center"
+                 Margin="10,0,0,0">
+
+                    <CheckBox
+                     Scale="1.4"
+                     Color="#3b7170"
+                     IsChecked="{Binding UsarDetalles}"/>
+
+                    <Label
+                     Text="Detalle" 
+                     VerticalOptions="Center"/>
+                    
+                </HorizontalStackLayout>
 
                 <!-- Título "INGRESAR" -->
                 <Border Grid.Column="1"
@@ -202,7 +222,7 @@
             
                 </Border>
 
-                <!-- Botón redondeado a la derecha -->
+                <!-- Botón redondeado a la DERECHA -->
                 <Border Grid.Column="2"
                  BackgroundColor="{StaticResource Terciary}"
                  HorizontalOptions="End"
@@ -266,7 +286,7 @@
 
             <!--espacio para ingreso por teclado de "monto"-->
             <Entry 
-             Text="{Binding Monto}" Placeholder="00,0$" FontAttributes="None"
+             Text="{Binding Monto}" IsEnabled="{Binding MontoEditable}" Placeholder="00,0$" FontAttributes="None"
              Margin="10,10,10,0" FontSize="Large" Keyboard="Numeric"/>
 
             <!--boton para guardar y validar los datos ingresados-->
@@ -284,7 +304,58 @@
              VerticalOptions="Center"
              HorizontalOptions="Center"/>
 
-        </StackLayout>
+
+
+
+
+            <CollectionView
+             ItemsSource="{Binding Detalles}"
+             IsVisible="{Binding UsarDetalles}"
+             Margin="0,10,0,0">
+
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid ColumnDefinitions="2*,*,*"
+                         ColumnSpacing="6"
+                         Padding="4">
+
+                            <!-- Nombre -->
+                            <Entry
+                             Placeholder="Nombre" 
+                             Text="{Binding Nombre, Mode=TwoWay}"
+                             FontSize="Large"/>
+
+                            <!-- Cantidad -->
+                            <Entry
+                             Grid.Column="1" 
+                             Placeholder="Cant."
+                             Keyboard="Numeric"
+                             Text="{Binding Cantidad, Mode=TwoWay}"
+                             FontSize="Large"/>
+
+                            <!-- Precio Unitario -->
+                            <Entry
+                             Grid.Column="2"
+                             Placeholder="Precio C/u"
+                             Keyboard="Numeric"
+                             Text="{Binding PrecioUnitario, Mode=TwoWay}"
+                             FontSize="Large"/>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+
+
+
+
+
+
+        </VerticalStackLayout>
 
     </ContentPage>
 
@@ -304,15 +375,35 @@
         </ContentPage.BindingContext>
 
         <!--distribucion vertical de la pestana egreso-->
-        <StackLayout Spacing="10">
+        <VerticalStackLayout Spacing="10" HorizontalOptions="Fill">
 
             <!--distribucion horizonatal "INGRESAR" y button de reset page-->
-            <Grid Margin="0,20,0,0" VerticalOptions="Center">
+            <Grid HorizontalOptions="Fill" Margin="0,20,0,0" VerticalOptions="Center">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
+
+                <!--button "detalles" IZQUIERDA-->
+                <HorizontalStackLayout
+                 Grid.Column="0"
+                 Spacing="5"
+                 HorizontalOptions="Start"
+                 VerticalOptions="Center"
+                 Margin="10,0,0,0">
+
+                    <CheckBox
+                     Scale="1.4"
+                     Color="#3b7170"
+                     IsChecked="{Binding Detalle}"
+                     Command="{Binding DetalleCommand}" />
+
+                    <Label
+                     Text="Detalle" 
+                     VerticalOptions="Center"/>
+
+                </HorizontalStackLayout>
 
                 <!-- Título "INGRESAR" -->
                 <Border Grid.Column="1"
@@ -432,7 +523,7 @@
              VerticalOptions="Center"
              HorizontalOptions="Center"/>
 
-        </StackLayout>
+        </VerticalStackLayout>
 
     </ContentPage>
 

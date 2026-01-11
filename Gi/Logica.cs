@@ -7,6 +7,8 @@ using Gi.ViewModels;
 //using Kotlin.Contracts;
 //using Kotlin;
 using System.IO;
+using Gi.Models;
+using System.Collections.Generic;
 
 
 public static class Logica
@@ -29,6 +31,9 @@ public static class Logica
         public static string? Destino { get; set; }
         public static string? DescDelEgreso { get; set; }
         public static float MontoEgreso { get; set; }
+
+
+    public static List<DetalleItem> Detalles { get; set; } = new();
 
 
     //METODOS
@@ -144,16 +149,39 @@ public static class Logica
             {
                 var hoja = workbook.Worksheets.Add("Datos");
 
-                hoja.Cell(1, 1).Value = "Fecha";
-                hoja.Cell(1, 2).Value = "Tipo De Movimiento";
-                hoja.Cell(1, 3).Value = "Tipo De Pago";
-                hoja.Cell(1, 4).Value = "Motivo";
-                hoja.Cell(1, 5).Value = "Origen/Destino";
-                hoja.Cell(1, 6).Value = "Descripción";
-                hoja.Cell(1, 7).Value = "Monto";
+                //DESCRIPCIÓN (columnas 1 a 4)
+                hoja.Range(1, 1, 1, 4).Merge().Value = "DESCRIPCIÓN";
+
+                //INGRESO / EGRESO (columnas 5 a 7)
+                hoja.Range(1, 5, 1, 7).Merge().Value = "INGRESO/EGRESO";
+
+                //DETALLES (columnas 8 a 10)
+                hoja.Range(1, 8, 1, 10).Merge().Value = "DETALLES";
+
+                //ENCABEZADOS DE COLUMNA
+                hoja.Cell(2, 1).Value = "Fecha";
+                hoja.Cell(2, 2).Value = "Tipo de movimiento";
+                hoja.Cell(2, 3).Value = "Tipo de pago";
+                hoja.Cell(2, 4).Value = "Motivo";
+
+                hoja.Cell(2, 5).Value = "Origen / Destino";
+                hoja.Cell(2, 6).Value = "Descripción";
+                hoja.Cell(2, 7).Value = "Monto";
+
+                hoja.Cell(2, 8).Value = "Nombre";
+                hoja.Cell(2, 9).Value = "Cantidad";
+                hoja.Cell(2, 10).Value = "Precio C/u";
+
+                //FORMATO DE CELDA CENTRADA
+                hoja.Range(1, 1, 2, 10).Style.Font.Bold = true;
+                hoja.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                hoja.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
+                hoja.Columns().AdjustToContents();
+                hoja.Column(1).Width = 14;
 
                 workbook.SaveAs(ruta);
-            }//...luego de escribirse se libera (estoy buscando optimizar tiempos)
+            }//...luego de escribirse se libera (optimizar tiempo)
         }
     }
     public static Task <(bool estado, string? msj)> GuardarArchMovimientos()
@@ -169,11 +197,12 @@ public static class Logica
                 // ?? (Izq == NULL -> se ejetuca Der, si no Izq) elegancia de C#
                 var hoja = workbook.Worksheets.FirstOrDefault() ?? workbook.Worksheets.Add("Datos");
 
-                int ultimaFila = hoja.LastRowUsed()?.RowNumber() + 1 ?? 2;
+                int filaInicio = hoja.LastRowUsed()?.RowNumber() + 1 ?? 3;
 
 
-                //formato ingreso: fecha|tipoDeMovimiento|tipoDePago|motivo|origen |             |monto|
-                //formato egreso:  fecha|tipoDeMovimiento|tipoDePago|motivo|destino|descDelEgreso|monto|
+
+                //formato ingreso: fecha|tipoDeMovimiento|tipoDePago|motivo|origen |             |monto|nombre|cantidad|precioC/u|
+                //formato egreso:  fecha|tipoDeMovimiento|tipoDePago|motivo|destino|descDelEgreso|monto|nombre|cantidad|precioC/u|
 
 
                 //string fecha listo
@@ -183,15 +212,48 @@ public static class Logica
                 string origenDestino = Ingreso ? Origen! : Destino!;
                 string descDelEgreso = Ingreso ? "-" : DescDelEgreso!; //! para deajar en claro q esta validado
                 float monto = Ingreso ? MontoIngreso : MontoEgreso;
+                //grilla con detalles listo
 
-                //escribo los datos en la ultima fila libre
-                hoja.Cell(ultimaFila, 1).Value = Fecha.ToString("dd/MM/yyyy");
-                hoja.Cell(ultimaFila, 2).Value = tipoMovimiento;
-                hoja.Cell(ultimaFila, 3).Value = TipoDePago;
-                hoja.Cell(ultimaFila, 4).Value = Motivo;
-                hoja.Cell(ultimaFila, 5).Value = origenDestino;
-                hoja.Cell(ultimaFila, 6).Value = descDelEgreso;
-                hoja.Cell(ultimaFila, 7).Value = monto;
+
+
+                //si hay datos de detalles los escribimos, sino se deja las celdas 8-10 vacias
+                var detalles = Detalles ?? new List<DetalleItem>();
+                
+                if (detalles.Count == 0)
+                    detalles.Add(new DetalleItem());
+
+
+                //escribo en el exel la fila de referencia + ingreso/egreso, al final de la 
+                //fila inserto la grilla de detalles (3 columnas, N filas cargadas por el usuario)
+                for (int i = 0; i < detalles.Count; i++)
+                {
+                    int filaActual = filaInicio + i;
+                    var detalle = detalles[i];
+
+                    //referencia + ingreso/egreso
+                    if (i == 0)
+                    {
+                        //escribo los datos en la ultima fila libre
+                        hoja.Cell(filaActual, 1).Value = Fecha.ToString("dd/MM/yyyy");
+                        hoja.Cell(filaActual, 2).Value = tipoMovimiento;
+                        hoja.Cell(filaActual, 3).Value = TipoDePago;
+                        hoja.Cell(filaActual, 4).Value = Motivo;
+                        hoja.Cell(filaActual, 5).Value = origenDestino;
+                        hoja.Cell(filaActual, 6).Value = descDelEgreso;
+                        hoja.Cell(filaActual, 7).Value = monto;
+                    }
+
+                    //grilla de detalles
+                    hoja.Cell(filaActual, 8).Value = detalle.Nombre ?? string.Empty;
+                    hoja.Cell(filaActual, 9).Value = detalle.Cantidad;
+                    hoja.Cell(filaActual, 10).Value = detalle.PrecioUnitario;
+
+                }
+
+                //centrar celdas escritas
+                hoja.Range(filaInicio, 1, filaInicio + detalles.Count - 1, 10)
+                .Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
 
                 //actualiza (y si es necesario crea en la ruta) el achivo de movimientos
                 workbook.SaveAs(RutaArchMovimientos());
@@ -374,10 +436,10 @@ public static class Logica
         ResetearReferencia();
         ResetearIngreso();
         ResetearEgreso();
+        Detalles.Clear();
 
         ResetGlobalSolicitado?.Invoke();
     }
-
 
 
 
@@ -398,7 +460,9 @@ public static class Logica
     //incluir button para compartir exel✅
 
     //TabbedPage.cs:
-    //implementar una grilla de "mas detalles" con un chekbox para el ingreso de varios articulos🔴2
+    //implementar una grilla de "mas detalles" con un chekbox para el ingreso de varios articulos🔴1
+    //contemplar todas las posibles validaciones q trae la grilla (valores numericos en cantidades, nombres no opionales, combinaciones de bugs, etc)🔴1
+    //boton para agregar filas a la grilla dinamica🔴1
     //hacer un ViewModel a cada pestana de tabbed, bindear todos los entrys✅
 
     //TabbedPage.xaml:
@@ -408,5 +472,5 @@ public static class Logica
 
     //FlyOutPage.cs:
     //hcaer/encontrar un algoritmo mas eficiente para encontrar las posibles combinaciones para poder exportar
-    //sin tantos if🔴1
+    //sin tantos if🔴2
 }
