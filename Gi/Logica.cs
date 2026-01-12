@@ -9,6 +9,7 @@ using Gi.ViewModels;
 using System.IO;
 using Gi.Models;
 using System.Collections.Generic;
+using System.Globalization;
 
 
 public static class Logica
@@ -60,7 +61,7 @@ public static class Logica
         bool origenValido = !string.IsNullOrWhiteSpace(origen);
         bool montoValido = false;
 
-        if (float.TryParse(monto, out float auxMonto))
+        if (float.TryParse(monto, NumberStyles.Float, CultureInfo.InvariantCulture, out float auxMonto))
         {
             if (auxMonto > 0)
                 montoValido = true;
@@ -83,7 +84,7 @@ public static class Logica
         bool descDelGastoValido = !string.IsNullOrWhiteSpace(descDelGasto);
         bool montoValido = false;
 
-        if (float.TryParse(monto, out float auxMonto))
+        if (float.TryParse(monto, NumberStyles.Float, CultureInfo.InvariantCulture, out float auxMonto))
         {
             if (auxMonto > 0)
                 montoValido = true;
@@ -149,6 +150,9 @@ public static class Logica
             {
                 var hoja = workbook.Worksheets.Add("Datos");
 
+
+
+
                 //DESCRIPCIÓN (columnas 1 a 4)
                 hoja.Range(1, 1, 1, 4).Merge().Value = "DESCRIPCIÓN";
 
@@ -157,6 +161,12 @@ public static class Logica
 
                 //DETALLES (columnas 8 a 10)
                 hoja.Range(1, 8, 1, 10).Merge().Value = "DETALLES";
+
+                var filaTitulos = hoja.Range(1, 1, 1, 10);
+                filaTitulos.Style.Font.Bold = true;
+                filaTitulos.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                filaTitulos.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
 
                 //ENCABEZADOS DE COLUMNA
                 hoja.Cell(2, 1).Value = "Fecha";
@@ -172,13 +182,29 @@ public static class Logica
                 hoja.Cell(2, 9).Value = "Cantidad";
                 hoja.Cell(2, 10).Value = "Precio C/u";
 
+                
                 //FORMATO DE CELDA CENTRADA
-                hoja.Range(1, 1, 2, 10).Style.Font.Bold = true;
-                hoja.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                hoja.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                var filaEncabezados = hoja.Range(2, 1, 2, 10);
+
+                filaEncabezados.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                filaEncabezados.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                filaEncabezados.Style.Border.OutsideBorderColor = XLColor.Black;
+                filaEncabezados.Style.Border.InsideBorderColor = XLColor.Black;
+
+                filaEncabezados.Style.Fill.BackgroundColor = XLColor.FromHtml("#1b998b");
+                filaEncabezados.Style.Font.FontColor = XLColor.Black;
+                filaEncabezados.Style.Font.Bold = true;
+                filaEncabezados.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                filaEncabezados.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
 
                 hoja.Columns().AdjustToContents();
+
+                //ANCHO DE COLUMNAS CON MAS INFO
                 hoja.Column(1).Width = 14;
+                hoja.Column(4).Width = 14;
+                hoja.Column(6).Width = 14;
+                hoja.Column(7).Width = 14;
+
 
                 workbook.SaveAs(ruta);
             }//...luego de escribirse se libera (optimizar tiempo)
@@ -218,18 +244,16 @@ public static class Logica
 
                 //si hay datos de detalles los escribimos, sino se deja las celdas 8-10 vacias
                 var detalles = Detalles ?? new List<DetalleItem>();
-                
-                if (detalles.Count == 0)
-                    detalles.Add(new DetalleItem());
 
+                //habra detalles
+                int filas = detalles.Count > 0 ? detalles.Count : 1;
 
                 //escribo en el exel la fila de referencia + ingreso/egreso, al final de la 
                 //fila inserto la grilla de detalles (3 columnas, N filas cargadas por el usuario)
-                for (int i = 0; i < detalles.Count; i++)
+                for (int i = 0; i < filas; i++)
                 {
                     int filaActual = filaInicio + i;
-                    var detalle = detalles[i];
-
+                    
                     //referencia + ingreso/egreso
                     if (i == 0)
                     {
@@ -243,17 +267,40 @@ public static class Logica
                         hoja.Cell(filaActual, 7).Value = monto;
                     }
 
-                    //grilla de detalles
-                    hoja.Cell(filaActual, 8).Value = detalle.Nombre ?? string.Empty;
-                    hoja.Cell(filaActual, 9).Value = detalle.Cantidad;
-                    hoja.Cell(filaActual, 10).Value = detalle.PrecioUnitario;
+                    //grilla de detalles solo si los hay
+                    if (detalles.Count > 0)
+                    {
+                        var detalle = detalles[i];
+                        hoja.Cell(filaActual, 8).Value = detalle.Nombre;
+                        hoja.Cell(filaActual, 9).Value = detalle.CantidadNumerica;
+                        hoja.Cell(filaActual, 10).Value = detalle.PrecioUnitarioNumerico;
+                    }
+                    else
+                    {
+                        //celdas vacías si no los hay
+                        hoja.Cell(filaActual, 8).Clear();
+                        hoja.Cell(filaActual, 9).Clear();
+                        hoja.Cell(filaActual, 10).Clear();
+
+                    }
 
                 }
 
                 //centrar celdas escritas
-                hoja.Range(filaInicio, 1, filaInicio + detalles.Count - 1, 10)
-                .Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                hoja.Range(filaInicio, 1, filaInicio + filas - 1, 10)
+                    .Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
+                //linea negrita divisoria de movimiento
+                int filaFinal = filaInicio + filas - 1;
+                hoja.Range(filaFinal, 1, filaFinal, 10)
+                    .Style.Border.BottomBorder = XLBorderStyleValues.Medium;
+
+                //formato de plata/biyuya/la lana/el money
+                hoja.Range(filaInicio, 7, filaInicio + filas - 1, 7)
+                    .Style.NumberFormat.Format = "$ #,##0.00";
+
+                hoja.Range(filaInicio, 10, filaInicio + filas - 1, 10)
+                    .Style.NumberFormat.Format = "$ #,##0.00";
 
                 //actualiza (y si es necesario crea en la ruta) el achivo de movimientos
                 workbook.SaveAs(RutaArchMovimientos());
@@ -443,7 +490,7 @@ public static class Logica
 
 
 
-
+    
 
     //FlyOutPage.cs:
     //obtener ruta✅
@@ -461,7 +508,7 @@ public static class Logica
 
     //TabbedPage.cs:
     //implementar una grilla de "mas detalles" con un chekbox para el ingreso de varios articulos🔴1
-    //contemplar todas las posibles validaciones q trae la grilla (valores numericos en cantidades, nombres no opionales, combinaciones de bugs, etc)🔴1
+    //contemplar todas las posibles validaciones q trae la grilla (valores numericos en cantidades, nombres no opcionales, combinaciones de bugs, etc)🔴1
     //boton para agregar filas a la grilla dinamica🔴1
     //hacer un ViewModel a cada pestana de tabbed, bindear todos los entrys✅
 
