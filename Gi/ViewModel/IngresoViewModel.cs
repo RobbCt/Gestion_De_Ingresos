@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
-//using System.Text;
+using System.Text;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Microsoft.Maui.Graphics;
@@ -37,14 +37,6 @@ internal class IngresoViewModel : INotifyPropertyChanged
         {
             _monto = value;
             OnPropertyChanged();
-            // Actualizamos Logica solo si no usamos detalles
-            if (!UsarDetalles)
-            {
-                if (float.TryParse(_monto, NumberStyles.Float, CultureInfo.InvariantCulture, out float valor))
-                    Logica.MontoIngreso = valor;
-                else
-                    Logica.MontoIngreso = 0;
-            }
         }
     }
 
@@ -63,13 +55,17 @@ internal class IngresoViewModel : INotifyPropertyChanged
             OnPropertyChanged();
             OnPropertyChanged(nameof(MontoEditable));
 
-            // reset lógico y visual del monto
+            //limpiar informe de guardado label
+            Informe = null;
+            ColorInforme = Colors.Transparent;
+
+            //reset lógico y visual del monto
             Monto = null;
             Logica.MontoIngreso = 0;
 
             if (_usarDetalles)
             {
-                RecalcularMonto(); // arrancará en 0 si no hay datos
+                RecalcularMonto(); //arrancará en 0 si no hay datos
             }
             else
             {
@@ -148,16 +144,30 @@ internal class IngresoViewModel : INotifyPropertyChanged
 
     //METODOS
 
+    bool TryGetMonto(out float monto)
+    {
+        monto = 0;
+    
+        if (string.IsNullOrWhiteSpace(Monto))
+            return false;
+    
+        return float.TryParse(
+            Monto,
+            NumberStyles.Float,
+            CultureInfo.InvariantCulture,
+            out monto
+        ) && monto > 0;
+    }
     void RecalcularMonto()
     {
-        if (!UsarDetalles) return;
+        if (!UsarDetalles)
+            return;
 
         float total = 0;
         foreach (var d in Detalles)
             total += d.CantidadNumerica * d.PrecioUnitarioNumerico;
 
-        Monto = total.ToString("0.##");
-        Logica.MontoIngreso = total;
+        Monto = total.ToString("0.##", CultureInfo.InvariantCulture);
     }
     void AgregarFila()
     {
@@ -192,37 +202,28 @@ internal class IngresoViewModel : INotifyPropertyChanged
 
         if (UsarDetalles)
         {
-            foreach (var detalle in Detalles)
+            foreach (var d in Detalles)
             {
-                if (string.IsNullOrWhiteSpace(detalle.Nombre)
-                    || detalle.CantidadNumerica <= 0
-                    || detalle.PrecioUnitarioNumerico <= 0)
+                if (string.IsNullOrWhiteSpace(d.Nombre)
+                    || d.CantidadNumerica <= 0
+                    || d.PrecioUnitarioNumerico <= 0)
                 {
                     detallesValidos = false;
-                    break;//xd
+                    break;
                 }
             }
         }
 
-        //siempre actualizamos la lista de detalles en Logica
-        Logica.Detalles = UsarDetalles ? Detalles.ToList() : new List<DetalleItem>();
+        if (!TryGetMonto(out float monto))
+            detallesValidos = false;
 
-        var origen = Origen ?? string.Empty;
-        var montoStr = Monto ?? string.Empty;
-        float montoNumerico = 0;
-        float.TryParse(montoStr, System.Globalization.NumberStyles.Float,
-                       System.Globalization.CultureInfo.InvariantCulture,
-                       out montoNumerico);
+        bool ingresoValido = detallesValidos && Logica.ValidarIngreso(Origen ?? string.Empty, monto);
 
-        bool ingresoValido = Logica.ValidarIngreso(origen, montoNumerico.ToString(CultureInfo.InvariantCulture));
-
-        //sincronizamos la validez de ingreso con los detalles
-        if (UsarDetalles && !detallesValidos)
-            ingresoValido = false;  //invalida el ingreso si los detalles no están completos
-
-        
         if (ingresoValido)
         {
+            //solo copiar detalles si es valido
+            Logica.DetallesIngreso = UsarDetalles ? Detalles.Select(d => d.Clone()).ToList() : new();
+
             Informe = "Guardado Exitoso";
             ColorInforme = Colors.Green;
         }
@@ -232,10 +233,8 @@ internal class IngresoViewModel : INotifyPropertyChanged
             ColorInforme = Colors.Red;
         }
 
-        
         Logica.Ingreso = ingresoValido;
     }
-
     public void ResetearIngreso()
     {
         //accion del usuario

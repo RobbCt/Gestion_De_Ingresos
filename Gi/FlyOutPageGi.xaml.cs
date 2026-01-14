@@ -35,279 +35,29 @@ public partial class FlyOutPageGi : FlyoutPage
     {
         bool band = false;
 
+        //Combinaciones válidas para exportar:
+        //1. Referencia + Ingreso válidos
+        //2. Referencia + Egreso válidos
+
         if (Logica.Referencia)
         {
             if (Logica.Ingreso && !Logica.Egreso)
             {
-                //referencia + ingreso validos
-
-                visFecha.Text = $"Fecha: {Logica.Fecha.ToString("dd/MM/yyyy")}";
-                visFecha.TextColor = Colors.White;
-
-                visTipoDePago.Text = $"Tipo De Pago: {Logica.TipoDePago}";
-                visTipoDePago.TextColor = Colors.White;
-
-                visMotivo.Text = $"Motivo: {Logica.Motivo}";
-                visMotivo.TextColor = Colors.White;
-
-                visOrigen.Text = $"Origen: {Logica.Origen}";
-                visOrigen.TextColor = Colors.White;
-
-                visMontoIngreso.Text = $"Monto (ingreso): {Logica.MontoIngreso}";
-                visMontoIngreso.TextColor = Colors.White;
-
-                Logica.Destino = "--";
-                visDestino.Text = $"Destino: {Logica.Destino}";
-                visDestino.TextColor = Colors.White;
-
-                Logica.DescDelEgreso = "--";
-                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelEgreso}";
-                visDescripcionDelEgreso.TextColor = Colors.White;
-
-                Logica.MontoEgreso = 0;
-                visMontoEgreso.Text = $"Monto (egreso): {Logica.MontoEgreso}";
-                visMontoEgreso.TextColor = Colors.White;
-
+                // referencia + ingreso validos
                 band = true;
             }
-
-            if (!Logica.Ingreso && Logica.Egreso)
+            else if (!Logica.Ingreso && Logica.Egreso)
             {
-                //referencia + egreso validos
-
-                visFecha.Text = $"Fecha: {Logica.Fecha.ToString("dd/MM/yyyy")}";
-                visFecha.TextColor = Colors.White;
-
-                visTipoDePago.Text = $"Tipo De Pago: {Logica.TipoDePago}";
-                visTipoDePago.TextColor = Colors.White;
-
-                visMotivo.Text = $"Motivo: {Logica.Motivo}";
-                visMotivo.TextColor = Colors.White;
-
-                Logica.Origen = "--";
-                visOrigen.Text = $"Origen: {Logica.Origen}";
-                visOrigen.TextColor = Colors.White;
-
-                Logica.MontoIngreso = 0;
-                visMontoIngreso.Text = $"Monto (ingreso): {Logica.MontoIngreso}";
-                visMontoIngreso.TextColor = Colors.White;
-
-                visDestino.Text = $"Destino: {Logica.Destino}";
-                visDestino.TextColor = Colors.White;
-
-                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelEgreso}";
-                visDescripcionDelEgreso.TextColor = Colors.White;
-
-                visMontoEgreso.Text = $"Monto (egreso): {Logica.MontoEgreso}";
-                visMontoEgreso.TextColor = Colors.White;
-
+                // referencia + egreso validos
                 band = true;
             }
-
-            if (!Logica.Ingreso && !Logica.Egreso) //solo para visualizar, eliminable
-            {
-                //solo refernecia valida
-
-                visFecha.Text = $"Fecha: {Logica.Fecha.ToString("dd/MM/yyyy")}";
-                visFecha.TextColor = Colors.White;
-
-                visTipoDePago.Text = $"Tipo De Pago: {Logica.TipoDePago}";
-                visTipoDePago.TextColor = Colors.White;
-
-                visMotivo.Text = $"Motivo: {Logica.Motivo}";
-                visMotivo.TextColor = Colors.White;
-
-                Logica.Origen = "--";
-                visOrigen.Text = $"Origen: {Logica.Origen}";
-                visOrigen.TextColor = Colors.White;
-
-                Logica.MontoIngreso = 0;
-                visMontoIngreso.Text = $"Monto (ingreso): {Logica.MontoIngreso}";
-                visMontoIngreso.TextColor = Colors.White;
-
-                Logica.Destino = "--";
-                visDestino.Text = $"Destino: {Logica.Destino}";
-                visDestino.TextColor = Colors.White;
-
-                Logica.DescDelEgreso = "--";
-                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelEgreso}";
-                visDescripcionDelEgreso.TextColor = Colors.White;
-
-                Logica.MontoEgreso = 0;
-                visMontoEgreso.Text = $"Monto (egreso): {Logica.MontoEgreso}";
-                visMontoEgreso.TextColor = Colors.White;
-
-            }
-            if (Logica.Ingreso && Logica.Egreso) //solo para visualizar, eliminable
-            {
-                visFecha.Text = $"Fecha: {Logica.Fecha.ToString("dd/MM/yyyy")}";
-                visFecha.TextColor = Colors.White;
-
-                visTipoDePago.Text = $"Tipo De Pago: {Logica.TipoDePago}";
-                visTipoDePago.TextColor = Colors.White;
-
-                visMotivo.Text = $"Motivo: {Logica.Motivo}";
-                visMotivo.TextColor = Colors.White;
-
-                visOrigen.Text = $"Origen: {Logica.Origen}";
-                visOrigen.TextColor = Colors.White;
-
-                visMontoIngreso.Text = $"Monto (ingreso): {Logica.MontoIngreso}";
-                visMontoIngreso.TextColor = Colors.White;
-
-                visDestino.Text = $"Destino: {Logica.Destino}";
-                visDestino.TextColor = Colors.White;
-
-                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelEgreso}";
-                visDescripcionDelEgreso.TextColor = Colors.White;
-
-                visMontoEgreso.Text = $"Monto (egreso): {Logica.MontoEgreso}";
-                visMontoEgreso.TextColor = Colors.White;
-            }
-
         }
-        else //solo para visualizar, eliminable
-        {
-            if (Logica.Ingreso && !Logica.Egreso)//solo para visualizar, eliminable
-            {
-                //solo ingreso valido
 
-                visFecha.Text = visFecha.Text = $"Fecha: --";
-                visFecha.TextColor = Colors.White;
 
-                Logica.TipoDePago = "--";
-                visTipoDePago.Text = $"Tipo De Pago: {Logica.TipoDePago}";
-                visTipoDePago.TextColor = Colors.White;
-
-                Logica.Motivo = "--";
-                visMotivo.Text = $"Motivo: {Logica.Motivo}";
-                visMotivo.TextColor = Colors.White;
-
-                visOrigen.Text = $"Origen: {Logica.Origen}";
-                visOrigen.TextColor = Colors.White;
-
-                visMontoIngreso.Text = $"Monto (ingreso): {Logica.MontoIngreso}";
-                visMontoIngreso.TextColor = Colors.White;
-
-                Logica.Destino = "--";
-                visDestino.Text = $"Destino: {Logica.Destino}";
-                visDestino.TextColor = Colors.White;
-
-                Logica.DescDelEgreso = "--";
-                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelEgreso}";
-                visDescripcionDelEgreso.TextColor = Colors.White;
-
-                Logica.MontoEgreso = 0;
-                visMontoEgreso.Text = $"Monto (egreso): {Logica.MontoEgreso}";
-                visMontoEgreso.TextColor = Colors.White;
-
-            }
-            if (!Logica.Ingreso && Logica.Egreso) //solo para visualizar, eliminable
-            {
-                //solo egreso valido
-
-                visFecha.Text = visFecha.Text = $"Fecha: --";
-                visFecha.TextColor = Colors.White;
-
-                Logica.TipoDePago = "--";
-                visTipoDePago.Text = $"Tipo De Pago: {Logica.TipoDePago}";
-                visTipoDePago.TextColor = Colors.White;
-
-                Logica.Motivo = "--";
-                visMotivo.Text = $"Motivo: {Logica.Motivo}";
-                visMotivo.TextColor = Colors.White;
-
-                Logica.Origen = "--";
-                visOrigen.Text = $"Origen: {Logica.Origen}";
-                visOrigen.TextColor = Colors.White;
-
-                Logica.MontoIngreso = 0;
-                visMontoIngreso.Text = $"Monto (ingreso): {Logica.MontoIngreso}";
-                visMontoIngreso.TextColor = Colors.White;
-
-                visDestino.Text = $"Destino: {Logica.Destino}";
-                visDestino.TextColor = Colors.White;
-
-                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelEgreso}";
-                visDescripcionDelEgreso.TextColor = Colors.White;
-
-                visMontoEgreso.Text = $"Monto (egreso): {Logica.MontoEgreso}";
-                visMontoEgreso.TextColor = Colors.White;
-            }
-            if (!Logica.Ingreso && !Logica.Egreso) //solo para visualizar, eliminable
-            {
-                //nada valido
-
-                visFecha.Text = visFecha.Text = $"Fecha: --";
-                visFecha.TextColor = Colors.White;
-
-                Logica.TipoDePago = "--";
-                visTipoDePago.Text = $"Tipo De Pago: {Logica.TipoDePago}";
-                visTipoDePago.TextColor = Colors.White;
-
-                Logica.Motivo = "--";
-                visMotivo.Text = $"Motivo: {Logica.Motivo}";
-                visMotivo.TextColor = Colors.White;
-
-                Logica.Origen = "--";
-                visOrigen.Text = $"Origen: {Logica.Origen}";
-                visOrigen.TextColor = Colors.White;
-
-                Logica.MontoIngreso = 0;
-                visMontoIngreso.Text = $"Monto (ingreso): {Logica.MontoIngreso}";
-                visMontoIngreso.TextColor = Colors.White;
-
-                Logica.Destino = "--";
-                visDestino.Text = $"Destino: {Logica.Destino}";
-                visDestino.TextColor = Colors.White;
-
-                Logica.DescDelEgreso = "--";
-                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelEgreso}";
-                visDescripcionDelEgreso.TextColor = Colors.White;
-
-                Logica.MontoEgreso = 0;
-                visMontoEgreso.Text = $"Monto (egreso): {Logica.MontoEgreso}";
-                visMontoEgreso.TextColor = Colors.White;
-            }
-            else if (Logica.Ingreso && Logica.Egreso) //solo para visualizar, eliminable
-            {
-                //ingreso + egreso validos
-
-                visFecha.Text = visFecha.Text = $"Fecha: --";
-                visFecha.TextColor = Colors.White;
-
-                Logica.TipoDePago = "--";
-                visTipoDePago.Text = $"Tipo De Pago: {Logica.TipoDePago}";
-                visTipoDePago.TextColor = Colors.White;
-
-                Logica.Motivo = "--";
-                visMotivo.Text = $"Motivo: {Logica.Motivo}";
-                visMotivo.TextColor = Colors.White;
-
-                visOrigen.Text = $"Origen: {Logica.Origen}";
-                visOrigen.TextColor = Colors.White;
-
-                visMontoIngreso.Text = $"Monto (ingreso): {Logica.MontoIngreso}";
-                visMontoIngreso.TextColor = Colors.White;
-
-                visDestino.Text = $"Destino: {Logica.Destino}";
-                visDestino.TextColor = Colors.White;
-
-                visDescripcionDelEgreso.Text = $"Descripcion Del Egreso: {Logica.DescDelEgreso}";
-                visDescripcionDelEgreso.TextColor = Colors.White;
-
-                visMontoEgreso.Text = $"Monto (egreso): {Logica.MontoEgreso}";
-                visMontoEgreso.TextColor = Colors.White;
-
-            }
-        }
 
         //band significa la exportacion de la infromacion actual (una convinacion valida
         if (band)
         {
-            visInformeReferencia.Text = "exportacion exitosa";
-            visInformeReferencia.TextColor = Colors.Green;
-
             var resultado = await Logica.GuardarArchMovimientos();
 
             if (resultado.estado)
@@ -319,16 +69,10 @@ public partial class FlyOutPageGi : FlyoutPage
         }
         else if (Logica.Referencia && Logica.Ingreso && Logica.Egreso)//de las combinaciones validas, completo las 3
         {
-            visInformeReferencia.Text = "exportacion fallida";
-            visInformeReferencia.TextColor = Colors.Red;
-
             await manejarExepciones((false, "No se pudo exportar el archivo, complete solo los campos correspondientes"));
         }
-        else //des las combinaciones validas, completo 1
+        else //de las combinaciones validas, completo 1
         {
-            visInformeReferencia.Text = "exportacion fallida";
-            visInformeReferencia.TextColor = Colors.Red;
-
             await manejarExepciones((false, "No se pudo exportar el archivo, complete los campos correspondientes minimos"));
         }
         //la visualizacion muestra la informacion actual

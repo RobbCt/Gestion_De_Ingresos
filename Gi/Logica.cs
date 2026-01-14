@@ -16,7 +16,7 @@ public static class Logica
 {
     //PROPIEDADES
     public static bool Referencia { get; set; } = false;
-    public static DateTime Fecha { get; set; } = DateTime.Now;
+        public static DateTime Fecha { get; set; } = DateTime.Now;
         public static string? TipoDePago { get; set; }
         public static string? Motivo { get; set; }
 
@@ -34,7 +34,9 @@ public static class Logica
         public static float MontoEgreso { get; set; }
 
 
-    public static List<DetalleItem> Detalles { get; set; } = new();
+    public static List<DetalleItem> DetallesIngreso { get; set; } = new();
+    public static List<DetalleItem> DetallesEgreso { get; set; } = new();
+  
 
 
     //METODOS
@@ -56,56 +58,49 @@ public static class Logica
 
         return Referencia;
     }
-    public static bool ValidarIngreso(string origen,string monto)
+    public static bool ValidarIngreso(string origen, float monto)
     {
         bool origenValido = !string.IsNullOrWhiteSpace(origen);
-        bool montoValido = false;
-
-        if (float.TryParse(monto, NumberStyles.Float, CultureInfo.InvariantCulture, out float auxMonto))
-        {
-            if (auxMonto > 0)
-                montoValido = true;
-        }
+        bool montoValido = monto > 0;
 
         if (origenValido && montoValido)
         {
             Ingreso = true;
             Origen = origen;
-            MontoIngreso = auxMonto;
+            MontoIngreso = monto;
         }
         else
+        {
             Ingreso = false;
+        }
 
         return Ingreso;
     }
-    public static bool ValidarEgreso(string destino,string descDelGasto,string monto)
+    public static bool ValidarEgreso(string destino, string descDelGasto, float monto)
     {
         bool destinoValido = !string.IsNullOrWhiteSpace(destino);
-        bool descDelGastoValido = !string.IsNullOrWhiteSpace(descDelGasto);
-        bool montoValido = false;
-
-        if (float.TryParse(monto, NumberStyles.Float, CultureInfo.InvariantCulture, out float auxMonto))
-        {
-            if (auxMonto > 0)
-                montoValido = true;
-        }
+        bool montoValido = monto > 0;
 
         if (destinoValido && montoValido)
         {
             Egreso = true;
             Destino = destino;
-            MontoEgreso = - auxMonto;
+            MontoEgreso = -monto;
 
-            if (descDelGastoValido)
+            if (!string.IsNullOrWhiteSpace(descDelGasto))
                 DescDelEgreso = descDelGasto;
             else
                 DescDelEgreso = "-";
         }
         else
+        {
             Egreso = false;
+        }
 
         return Egreso;
     }
+
+
 
     //METODOS DE UBICACION DE LOS ARCHIVOS
     //AppDataDirectory y consultas al sistema se deben hacer luego de iniciar la app completamente (ej: inicio por primera vez)
@@ -215,6 +210,13 @@ public static class Logica
         //alguien hoy me empezo a joder con el trycatch...
         try
         {
+            // Validar combinaciones
+            if (Ingreso && Egreso)
+            {
+                return Task.FromResult<(bool estado, string? msj)>(
+                    (false, "No se puede exportar cuando Ingreso y Egreso están activas al mismo tiempo."));
+            }
+
             //declaracion clase q maneja el exel (obj)
             using (XLWorkbook workbook = AbrirOcrearWorkbook(RutaArchMovimientos()))
             {
@@ -243,7 +245,7 @@ public static class Logica
 
 
                 //si hay datos de detalles los escribimos, sino se deja las celdas 8-10 vacias
-                var detalles = Detalles ?? new List<DetalleItem>();
+                List<DetalleItem> detalles = Ingreso ? DetallesIngreso : DetallesEgreso;
 
                 //habra detalles
                 int filas = detalles.Count > 0 ? detalles.Count : 1;
@@ -296,11 +298,26 @@ public static class Logica
                     .Style.Border.BottomBorder = XLBorderStyleValues.Medium;
 
                 //formato de plata/biyuya/la lana/el money
-                hoja.Range(filaInicio, 7, filaInicio + filas - 1, 7)
-                    .Style.NumberFormat.Format = "$ #,##0.00";
+                for (int fila = filaInicio; fila <= filaFinal; fila++)
+                {
+                    //Formato para Monto (columna 7)
+                    var celdaMonto = hoja.Cell(fila, 7);
 
-                hoja.Range(filaInicio, 10, filaInicio + filas - 1, 10)
-                    .Style.NumberFormat.Format = "$ #,##0.00";
+                    if (celdaMonto.TryGetValue(out double valorMonto))
+                    {
+                        celdaMonto.Style.NumberFormat.Format =
+                            Math.Abs(valorMonto % 1) <= 0.00001 ? "$#,##0" : "$#,##0.00";
+                    }
+
+                    // Formato para Precio Unitario (columna 10)
+                    var celdaPrecio = hoja.Cell(fila, 10);
+
+                    if (celdaPrecio.TryGetValue(out double valorPrecio))
+                    {
+                        celdaPrecio.Style.NumberFormat.Format =
+                            Math.Abs(valorPrecio % 1) <= 0.00001 ? "$#,##0" : "$#,##0.00";    
+                    }
+                }
 
                 //actualiza (y si es necesario crea en la ruta) el achivo de movimientos
                 workbook.SaveAs(RutaArchMovimientos());
@@ -454,7 +471,6 @@ public static class Logica
 
 
     public static event Action? ResetGlobalSolicitado;
-
     public static void ResetearReferencia()
     {
         Referencia = false;
@@ -462,14 +478,12 @@ public static class Logica
         TipoDePago = null;
         Motivo = null;
     }
-
     public static void ResetearIngreso()
     {
         Ingreso = false;
         Origen = null;
         MontoIngreso = 0;
     }
-
     public static void ResetearEgreso()
     {
         Egreso = false;
@@ -477,39 +491,40 @@ public static class Logica
         DescDelEgreso = null;
         MontoEgreso = 0;
     }
-
     public static void ResetearMovimiento()
     {
         ResetearReferencia();
         ResetearIngreso();
         ResetearEgreso();
-        Detalles.Clear();
+        
+        DetallesIngreso.Clear();
+        DetallesEgreso.Clear();
 
         ResetGlobalSolicitado?.Invoke();
     }
 
 
 
-    
+
 
     //FlyOutPage.cs:
     //obtener ruta✅
     //crear exel✅
     //actualizar ordenadamente el exel✅
     //abrir exel✅
-    //incluir recurso de plantilla bonita de exel e implementar en el archivo🔴3
+    //incluir recurso de plantilla bonita de exel e implementar en el archivo🔴4
     //aunque no estoy seguro de como implenmentar Deudas.xlsx, dejar el codigo listo para su implementacion en todas las formas de Movimientos.xlsx✅
-    //limpiar el evento de exportar (me refiero a la banda de if q tiene)
+    //limpiar el evento de exportar (me refiero a la banda de if q tiene)✅
 
     //FlyOutPage.xaml:
-    //quitar la visualisacion de todos los datos en el flyout
+    //quitar la visualisacion de todos los datos en el flyout✅
     //dejarle un button de exportar ✅
     //incluir button para compartir exel✅
 
     //TabbedPage.cs:
-    //implementar una grilla de "mas detalles" con un chekbox para el ingreso de varios articulos🔴1
-    //contemplar todas las posibles validaciones q trae la grilla (valores numericos en cantidades, nombres no opcionales, combinaciones de bugs, etc)🔴1
-    //boton para agregar filas a la grilla dinamica🔴1
+    //implementar una grilla de "mas detalles" con un chekbox para el ingreso de varios articulos✅
+    //contemplar todas las posibles validaciones q trae la grilla (valores numericos en cantidades, nombres no opcionales, combinaciones de bugs, etc)✅
+    //boton para agregar filas a la grilla dinamica✅
     //hacer un ViewModel a cada pestana de tabbed, bindear todos los entrys✅
 
     //TabbedPage.xaml:
@@ -519,5 +534,11 @@ public static class Logica
 
     //FlyOutPage.cs:
     //hcaer/encontrar un algoritmo mas eficiente para encontrar las posibles combinaciones para poder exportar
-    //sin tantos if🔴2
+    //sin tantos✅
+
+
+    //Logica.cs
+    //cambiar el variables q manejan valores de decimal a float🔴1
+    //recta final...revisar el codtigo quitando amiguedades y codigo repetido🔴2
+    //pq tener solo 1 archivo donde exportar?...(revisar idea de mas archivos a la disposicion del usuario)🔴3
 }

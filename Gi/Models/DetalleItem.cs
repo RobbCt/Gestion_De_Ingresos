@@ -73,4 +73,14 @@ public class DetalleItem : INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
     void OnPropertyChanged([CallerMemberName] string? name = null)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+    public DetalleItem Clone()
+    {
+        return new DetalleItem
+        {
+            Nombre = this.Nombre,
+            Cantidad = this.Cantidad,
+            PrecioUnitario = this.PrecioUnitario
+        };
+    }
 }

@@ -1,9 +1,14 @@
-﻿using System;
+﻿using Gi.Models;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-//using System.Text;
+using System.Globalization;
+using System.Text;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using Microsoft.Maui.Graphics;
+using Microsoft.Maui.Controls;
 
 namespace Gi.ViewModels;
 
@@ -38,6 +43,52 @@ internal class EgresoViewModel : INotifyPropertyChanged
         set { _monto = value; OnPropertyChanged(); }
     }
 
+    //esatdo de grilla
+    bool _usarDetalles;
+    //(activa/desactiva)
+    public bool UsarDetalles
+    {
+        get => _usarDetalles;
+        set
+        {
+            if (_usarDetalles == value)
+                return;
+
+            _usarDetalles = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(MontoEditable));
+
+            //limpiar informe
+            Informe = null;
+            ColorInforme = Colors.Transparent;
+
+            //reset lógico del monto
+            if (_usarDetalles)
+            {
+                // activar grilla y mostrar 0 en Monto
+                if (string.IsNullOrWhiteSpace(Monto))
+                    Monto = "0";
+
+                RecalcularMonto();
+            }
+            else
+            {
+                // desactivar grilla y limpiar detalles
+                LimpiarDetalles();
+            }
+        }
+    }
+
+    //bloqueo monto si detalles activos
+    public bool MontoEditable => !UsarDetalles;
+
+    //datos grilla
+    public ObservableCollection<DetalleItem> Detalles { get; set; }
+
+    
+    
+    
+
     //INFORME DE VALIDACION
 
     string? _informe;
@@ -55,11 +106,22 @@ internal class EgresoViewModel : INotifyPropertyChanged
         set { _colorInforme = value; OnPropertyChanged(); }
     }
 
-    //ACCION BUTTON GUARDAR
-    public ICommand GuardarEgresoCommand { get; }
 
-    //ACCION PAGINA RESETEAR
+    //ACCIONES
+
+    //button guardar
+    public ICommand GuardarEgresoCommand { get; }
+    //pagina resetear
     public ICommand ResetearEgresoCommand { get; }
+    //ingreso detalles
+    public ICommand ActivarDetallesCommand { get; }
+    //el nombre ya lo dice
+    public ICommand AgregarFilaCommand { get; }
+    //es obvio
+    public ICommand QuitarFilaCommand { get; }
+
+
+
 
     //CONTRUCTOR DEL VIEWMODEL
 
@@ -67,19 +129,118 @@ internal class EgresoViewModel : INotifyPropertyChanged
     {
         Logica.ResetGlobalSolicitado += ResetGlobal;
 
+        Detalles = new ObservableCollection<DetalleItem>();
+        Detalles.CollectionChanged += (_, __) =>
+        {
+            if (UsarDetalles)
+                RecalcularMonto();
+        };
+
+        AgregarFila();
+
         GuardarEgresoCommand = new Command(setPropEgreso);
         ResetearEgresoCommand = new Command(ResetearEgreso);
+
+        ActivarDetallesCommand = new Command(() => UsarDetalles = !UsarDetalles);
+
+        AgregarFilaCommand = new Command(AgregarFila);
+        QuitarFilaCommand = new Command(QuitarFila);
     }
 
     // METODOS
+
+    bool TryGetMonto(out float monto)
+    {
+        monto = 0;
+
+        if (string.IsNullOrWhiteSpace(Monto))
+            return false;
+
+        return float.TryParse(
+            Monto,
+            NumberStyles.Float,
+            CultureInfo.InvariantCulture,
+            out monto
+        ) && monto > 0;
+    }
+    void RecalcularMonto()
+    {
+        if (!UsarDetalles)
+            return;
+
+        float total = 0;
+        foreach (var d in Detalles)
+            total += d.CantidadNumerica * d.PrecioUnitarioNumerico;
+
+        Monto = total.ToString("0.##", CultureInfo.InvariantCulture);
+    }
+    void AgregarFila()
+    {
+        var item = new DetalleItem();
+        item.PropertyChanged += (_, __) =>
+        {
+            if (UsarDetalles)
+                RecalcularMonto();
+        };
+
+        Detalles.Add(item);
+    }
+    void QuitarFila()
+    {
+        if (Detalles.Count <= 1)
+            return;
+
+        Detalles.RemoveAt(Detalles.Count - 1);
+
+        if (UsarDetalles)
+            RecalcularMonto();
+    }
+    void LimpiarDetalles()
+    {
+        Detalles.Clear();
+        AgregarFila();
+
+        if (UsarDetalles)
+            Monto = "0";
+        else
+            Monto = null;
+    }
     void setPropEgreso()
     {
-        var destino = Destino ?? string.Empty;
-        var descripcion = Descripcion ?? string.Empty;
-        var monto = Monto ?? string.Empty;
+        bool detallesValidos = true;
 
-        if (Logica.ValidarEgreso(destino, descripcion, monto))
+        // validar grilla si está activa
+        if (UsarDetalles)
         {
+            foreach (var d in Detalles)
+            {
+                if (string.IsNullOrWhiteSpace(d.Nombre)
+                    || d.CantidadNumerica <= 0
+                    || d.PrecioUnitarioNumerico <= 0)
+                {
+                    detallesValidos = false;
+                    break;
+                }
+            }
+        }
+
+        // validar monto (viene del entry o de la grilla)
+        if (!float.TryParse(
+            Monto,
+            NumberStyles.Float,
+            CultureInfo.InvariantCulture,
+            out float monto))
+        {
+            detallesValidos = false;
+        }
+
+        bool egresoValido = detallesValidos && Logica.ValidarEgreso(Destino ?? string.Empty, Descripcion ?? string.Empty, monto);
+
+        if (egresoValido)
+        {
+            //copiar detalles si el ingreso es valido
+            Logica.DetallesEgreso = UsarDetalles ? Detalles.Select(d => d.Clone()).ToList() : new();
+
             Informe = "Guardado Exitoso";
             ColorInforme = Colors.Green;
         }
@@ -88,32 +249,40 @@ internal class EgresoViewModel : INotifyPropertyChanged
             Informe = "Datos Incompletos";
             ColorInforme = Colors.Red;
         }
-    }
 
-    private void ResetGlobal()
+        Logica.Egreso = egresoValido;
+    }
+    public void ResetearEgreso()
     {
-        //reaccion de un evento en la app 
+        //accion del usuario
+
+        Destino = null;
+        Descripcion = null;
+        Informe = null;
+        ColorInforme = Colors.Transparent;
+
+        UsarDetalles = false; // esto llamará automáticamente a LimpiarDetalles() y pondrá Monto = null
+
+        Logica.ResetearEgreso();
+    }
+    void ResetGlobal()
+    {
+        //reaccion a un evento en la app
 
         Destino = null;
         Descripcion = null;
         Monto = null;
         Informe = null;
         ColorInforme = Colors.Transparent;
+
+        UsarDetalles = false;
+
+        Detalles.Clear();
+        AgregarFila();
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
     void OnPropertyChanged([CallerMemberName] string? name = null)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-    public void ResetearEgreso()
-    {
-        //accion del usuario 
-
-        Destino = null;
-        Descripcion = null;
-        Monto = null;
-        Informe = null;
-        ColorInforme = Colors.Transparent;
-        Logica.ResetearEgreso();
-    }
 }

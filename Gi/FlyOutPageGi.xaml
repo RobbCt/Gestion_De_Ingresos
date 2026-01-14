@@ -79,37 +79,22 @@
                  Background="{StaticResource Terciary}"
                  FontAttributes="None"/>
 
-                <!--inhabilitar toques en espacios vacios
+                <!--inhabilitar toques en espacios vacios-->
                 <Button
                  BackgroundColor="Transparent"
                  HorizontalOptions="Start"
                  VerticalOptions="Start"
-                 WidthRequest="1000" HeightRequest="1000"/>-->
+                 WidthRequest="1000" HeightRequest="1000"/>
 
                 
                 
                 
                 
                 
-                <!--/////ESPACIO PARA LA VISUALIZACION DE DATOS VALIDOS INGRESADOS/////-->
-                <StackLayout BackgroundColor="{StaticResource Primary}">
-                    
-                    <Label x:Name="visFecha" Text="Fecha: --" FontSize="Medium" TextColor="White" Margin="10,20,0,10"/>
-                    <Label x:Name="visTipoDePago" Text="Tipo De Pago: --" FontSize="Medium" TextColor="White" Margin="10,0,0,10"/>
-                    <Label x:Name="visMotivo" Text="Motivo: --" FontSize="Medium" TextColor="White" Margin="10,0,0,10"/>
-                    <Label x:Name="visOrigen" Text="Origen: --" FontSize="Medium" TextColor="White" Margin="10,0,0,10"/>
-                    <Label x:Name="visMontoIngreso" Text="Monto (ingreso): 0" FontSize="Medium" TextColor="White" Margin="10,0,0,10"/>
-                    <Label x:Name="visDestino" Text="Destino: --" FontSize="Medium" TextColor="White" Margin="10,0,0,10"/>
-                    <Label x:Name="visDescripcionDelEgreso" Text="Descripcion Del Egreso: --" FontSize="Medium" TextColor="White" Margin="10,0,0,10"/>
-                    <Label x:Name="visMontoEgreso" Text="Monto (egreso): 0" FontSize="Medium" TextColor="White" Margin="10,0,0,10"/>
+                
+                   
 
-                    <!--informe del guardado-->
-                    <Label 
-                     x:Name="visInformeReferencia" Text="[estado de validacion]" FontSize="Medium"
-                     VerticalOptions="Center" Margin="0,10,0,10"
-                     HorizontalOptions="Center" TextColor="White"/>
-
-                </StackLayout>
+                
                 
                 
                 

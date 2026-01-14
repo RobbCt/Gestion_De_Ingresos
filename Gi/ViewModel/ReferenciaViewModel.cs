@@ -11,13 +11,13 @@ internal class ReferenciaViewModel : INotifyPropertyChanged
 {
     //PROPIEDADES REFERENCIA (OnProperty para q la Ui se resetee con un boton)
 
-    //campo
-    string? _fecha;
+    // Fecha como DateTime para usar con DatePicker
+    DateTime _fecha = DateTime.Now;
     //valor en la UI
-    public string? Fecha
+    public DateTime Fecha
     {
         get => _fecha;
-        set { _fecha = value; OnPropertyChanged();}
+        set { _fecha = value; OnPropertyChanged(); }
     }
 
     //campo
@@ -79,6 +79,7 @@ internal class ReferenciaViewModel : INotifyPropertyChanged
             "Tarjeta",
             "Otro"
         };
+
         GuardarReferenciaCommand = new Command(setPropReferencia);
 
         ResetearReferenciaCommand = new Command(ResetearReferencia);
@@ -89,11 +90,11 @@ internal class ReferenciaViewModel : INotifyPropertyChanged
 
     void setPropReferencia()
     {
-        var fecha = Fecha ?? string.Empty;
-        var tipo = TipoDePago ?? string.Empty;
-        var motivo = Motivo ?? string.Empty;
+        string fechaStr = Fecha.ToString("dd/MM/yyyy");
+        string tipo = TipoDePago ?? string.Empty;
+        string motivo = Motivo ?? string.Empty;
 
-        if (Logica.ValidarReferencia(fecha, tipo, motivo))
+        if (Logica.ValidarReferencia(fechaStr, tipo, motivo))
         {
             Informe = "Guardado Exitoso";
             ColorInforme = Colors.Green;
@@ -109,7 +110,7 @@ internal class ReferenciaViewModel : INotifyPropertyChanged
     {
         //reaccion de un evento en la app
 
-        Fecha = null;
+        Fecha = DateTime.Now;
         TipoDePago = null;
         Motivo = null;
         Informe = null;
@@ -123,7 +124,7 @@ internal class ReferenciaViewModel : INotifyPropertyChanged
     {
         //accion del usuario    
 
-        Fecha = null;
+        Fecha = DateTime.Now;
         TipoDePago = null;
         Motivo = null;
         Informe = null;

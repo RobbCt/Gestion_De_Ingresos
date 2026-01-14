@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <TabbedPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
              xmlns:local="clr-namespace:Gi" 
              xmlns:models="clr-namespace:Gi.Models"
              x:Class="Gi.TabbedPageGi"
@@ -19,6 +20,7 @@
     
     <!--pestana de REFERENCIA-->
     <ContentPage Title="REFERENCIA" IconImageSource="referencia.png"
+                 xmlns:sys="clr-namespace:System;assembly=netstandard"
                  BackgroundColor = "Black" xmlns:viewModels="clr-namespace:Gi.ViewModels">
 
         <!--view model referencia-->
@@ -27,7 +29,7 @@
         </ContentPage.BindingContext>
 
         <!--distribucon vertical de la pestana de referencia-->
-        <VerticalStackLayout Spacing="10" HorizontalOptions="Fill">
+        <VerticalStackLayout Spacing="2" HorizontalOptions="Fill">
 
             <!--distribucion horizonatal "INGRESAR" y button de reset page-->
             <Grid HorizontalOptions="Fill" Margin="0,20,0,0" VerticalOptions="Center">
@@ -80,7 +82,7 @@
             <!--borde para titulo de "fecha"-->
             <Border BackgroundColor="{StaticResource Terciary}"
                     WidthRequest="90" HeightRequest="40"
-                    StrokeShape="RoundRectangle 5"
+                    StrokeShape="RoundRectangle 5" 
                     Stroke="{StaticResource Terciary}"
                     Margin="10,70,0,0" VerticalOptions="Start"
                     HorizontalOptions="Start">
@@ -94,9 +96,13 @@
             </Border>
 
             <!--espacio para ingreso por teclado de "fecha"-->
-            <Entry 
-             Placeholder="Ej: 19/03/2004" Text="{Binding Fecha}" FontAttributes="None"
-             Margin="10,10,10,0" FontSize="Large" Keyboard="Url"/>
+            <DatePicker
+             Date="{Binding Fecha}"
+             MaximumDate="{x:Static sys:DateTime.Now}" 
+             Format="dd/MM/yyyy" FontSize="Large"
+             HorizontalOptions="Fill"
+             VerticalOptions="Center"
+             Margin="10,10,10,0"/>
 
             <!--borde para titulo de "tipo de pago"-->
             <Border BackgroundColor="{StaticResource Terciary}"
@@ -183,7 +189,7 @@
 
 
             <!--distribucion vertical de la pestana ingreso-->
-            <VerticalStackLayout Grid.Row="0" Spacing="10" HorizontalOptions="Fill">
+            <VerticalStackLayout Grid.Row="0" Spacing="2" HorizontalOptions="Fill">
 
                 <!--distribucion horizonatal "INGRESAR" y button de reset page-->
                 <Grid  HorizontalOptions="Fill" Margin="0,20,0,0" VerticalOptions="Center">
@@ -422,7 +428,8 @@
 
 
     <!--pestana de egreso-->
-    <ContentPage Title="EGRESO" IconImageSource="egreso.png"
+    <ContentPage x:Name="EgresoPage" Title="EGRESO" IconImageSource="egreso.png"
+                 xmlns:models="clr-namespace:Gi.Models"
                  BackgroundColor = "Black" xmlns:viewModels="clr-namespace:Gi.ViewModels">
 
         <!--view model egreso-->
@@ -430,156 +437,260 @@
             <viewModels:EgresoViewModel />
         </ContentPage.BindingContext>
 
-        <!--distribucion vertical de la pestana egreso-->
-        <VerticalStackLayout Spacing="10" HorizontalOptions="Fill">
+        <Grid RowDefinitions="Auto,*">
+        
+        
+            <!--distribucion vertical de la pestana egreso-->
+            <VerticalStackLayout Grid.Row="0"  Spacing="2" HorizontalOptions="Fill">
 
-            <!--distribucion horizonatal "INGRESAR" y button de reset page-->
-            <Grid HorizontalOptions="Fill" Margin="0,20,0,0" VerticalOptions="Center">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+                <!--distribucion horizonatal "INGRESAR" y button de reset page-->
+                <Grid HorizontalOptions="Fill" Margin="0,20,0,0" VerticalOptions="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                <!--button "detalles" IZQUIERDA-->
-                <HorizontalStackLayout
-                 Grid.Column="0"
-                 Spacing="5"
-                 HorizontalOptions="Start"
-                 VerticalOptions="Center"
-                 Margin="10,0,0,0">
+                    <!--button "detalles" IZQUIERDA-->
+                    <HorizontalStackLayout
+                     Grid.Column="0"
+                     Spacing="5"
+                     HorizontalOptions="Start"
+                     VerticalOptions="Center"
+                     Margin="10,0,0,0">
 
-                    <CheckBox
-                     Scale="1.4"
-                     Color="#3b7170"
-                     IsChecked="{Binding Detalle}"
-                     Command="{Binding DetalleCommand}" />
+                        <CheckBox
+                         Scale="1.4"
+                         Color="#3b7170"
+                         IsChecked="{Binding UsarDetalles}"/>
 
-                    <Label
-                     Text="Detalle" 
-                     VerticalOptions="Center"/>
+                        <Label
+                         Text="Detalle" 
+                         VerticalOptions="Center"/>
 
-                </HorizontalStackLayout>
+                    </HorizontalStackLayout>
 
-                <!-- Título "INGRESAR" -->
-                <Border Grid.Column="1"
-                 BackgroundColor="{StaticResource Terciary}"
-                 WidthRequest="145" HeightRequest="40"
+                    <!-- Título "INGRESAR" -->
+                    <Border Grid.Column="1"
+                     BackgroundColor="{StaticResource Terciary}"
+                     WidthRequest="145" HeightRequest="40"
+                     StrokeShape="RoundRectangle 5"
+                     Stroke="{StaticResource Terciary}"
+                     HorizontalOptions="Center">
+
+                        <Label Text="INGRESAR" FontSize="Large"
+                         HorizontalOptions="Center" VerticalOptions="Center"
+                         FontAttributes="Bold" TextColor="{StaticResource Secondary}"
+                         BackgroundColor="{StaticResource Terciary}"/>
+
+                    </Border>
+
+                    <!-- Botón redondeado a la derecha -->
+                    <Border Grid.Column="2"
+                     BackgroundColor="{StaticResource Terciary}"
+                     HorizontalOptions="End"
+                     Margin="0,0,15,0"
+                     WidthRequest="40" 
+                     HeightRequest="40">
+
+                        <!--engorde (redondes)-->
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="100"/>
+                        </Border.StrokeShape>
+
+                        <!--bindeo-->
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ResetearEgresoCommand}"/>
+                        </Border.GestureRecognizers>
+
+                        <!--imagen boton-->
+                        <Image Source="deletepage.svg" WidthRequest="27" HeightRequest="27"/>
+
+                    </Border>
+
+                </Grid>
+
+                <!--borde para titulo de "destino"-->
+                <Border BackgroundColor="{StaticResource Terciary}"
+                 WidthRequest="100" HeightRequest="40"
                  StrokeShape="RoundRectangle 5"
                  Stroke="{StaticResource Terciary}"
-                 HorizontalOptions="Center">
+                 Margin="10,70,0,0" VerticalOptions="Start"
+                 HorizontalOptions="Start">
 
-                    <Label Text="INGRESAR" FontSize="Large"
+                    <!--texto para titulo de "destino"-->
+                    <Label 
+                     Text="Destino:" FontSize="Large"
                      HorizontalOptions="Center" VerticalOptions="Center"
-                     FontAttributes="Bold" TextColor="{StaticResource Secondary}"
-                     BackgroundColor="{StaticResource Terciary}"/>
+                     FontAttributes="Bold"/>
 
                 </Border>
 
-                <!-- Botón redondeado a la derecha -->
-                <Border Grid.Column="2"
+                <!--espacio para ingreso por teclado de "destino"-->
+                <Entry 
+                 Text="{Binding Destino}" Placeholder="¿Quién recibió este egreso?" FontAttributes="None"
+                 Margin="10,10,10,0" FontSize="Large" Keyboard="Text"/>
+
+                <!--borde para titulo de "descrpcion del gasto"-->
+                <Border BackgroundColor="{StaticResource Terciary}"
+                 WidthRequest="250" HeightRequest="40"
+                 StrokeShape="RoundRectangle 5"
+                 Stroke="{StaticResource Terciary}"
+                 Margin="10,10,0,0" VerticalOptions="Start"
+                 HorizontalOptions="Start">
+
+                    <!--texto para titulo de "descrpcion del gasto"-->
+                    <Label 
+                     Text="Descripción Del Egreso:" FontSize="Large"
+                     HorizontalOptions="Center" VerticalOptions="Center"
+                     FontAttributes="Bold"/>
+
+                </Border>
+
+                <!--espacio para ingreso por teclado de "descrpcion del gasto"-->
+                <Entry 
+                 Text="{Binding Descripcion}" Placeholder="¿En qué se gastó? (opcional)" FontAttributes="None"
+                 Margin="10,10,10,0" FontSize="Large" Keyboard="Text"/>
+
+                <!--borde para titulo de "monto"-->
+                <Border BackgroundColor="{StaticResource Terciary}"
+                 WidthRequest="90" HeightRequest="40"
+                 StrokeShape="RoundRectangle 5"
+                 Stroke="{StaticResource Terciary}"
+                 Margin="10,10,0,0" VerticalOptions="Start"
+                 HorizontalOptions="Start">
+
+                    <!--texto para titulo de "monto"-->
+                    <Label 
+                     Text="Monto:" FontSize="Large"
+                     HorizontalOptions="Center" VerticalOptions="Center"
+                     FontAttributes="Bold"/>
+
+                </Border>
+
+                <!--espacio para ingreso por teclado de "monto"-->
+                <Entry 
+                 Text="{Binding Monto}"  IsEnabled="{Binding MontoEditable}"
+                 Placeholder="00,0$" FontAttributes="None"
+                 Margin="10,10,10,0" FontSize="Large" Keyboard="Numeric"/>
+
+                <!--boton para guardar y validar los datos ingresados-->
+                <Button
+                 Text="Guardar" Command="{Binding GuardarEgresoCommand}"
+                 FontSize="Large" FontAttributes="Bold"
+                 HorizontalOptions="Center"
                  BackgroundColor="{StaticResource Terciary}"
-                 HorizontalOptions="End"
-                 Margin="0,0,15,0"
-                 WidthRequest="40" 
-                 HeightRequest="40">
+                 TextColor="{StaticResource Secondary}"
+                 BorderColor="{StaticResource Secondary}" BorderWidth="1"/>
 
-                    <!--engorde (redondes)-->
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="100"/>
-                    </Border.StrokeShape>
-
-                    <!--bindeo-->
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ResetearEgresoCommand}"/>
-                    </Border.GestureRecognizers>
-
-                    <!--imagen boton-->
-                    <Image Source="deletepage.svg" WidthRequest="27" HeightRequest="27"/>
-
-                </Border>
-
-            </Grid>
-
-            <!--borde para titulo de "destino"-->
-            <Border BackgroundColor="{StaticResource Terciary}"
-             WidthRequest="100" HeightRequest="40"
-             StrokeShape="RoundRectangle 5"
-             Stroke="{StaticResource Terciary}"
-             Margin="10,70,0,0" VerticalOptions="Start"
-             HorizontalOptions="Start">
-
-                <!--texto para titulo de "destino"-->
+                <!--informe del guardado-->
                 <Label 
-                 Text="Destino:" FontSize="Large"
-                 HorizontalOptions="Center" VerticalOptions="Center"
-                 FontAttributes="Bold"/>
+                 Text="{Binding Informe}" TextColor="{Binding ColorInforme}" 
+                 VerticalOptions="Center"
+                 HorizontalOptions="Center"/>
 
-            </Border>
 
-            <!--espacio para ingreso por teclado de "destino"-->
-            <Entry 
-             Text="{Binding Destino}" Placeholder="¿Quién recibió este egreso?" FontAttributes="None"
-             Margin="10,10,10,0" FontSize="Large" Keyboard="Text"/>
+                <!--buttons agregar/quitar filas-->
+                <Grid
+                    IsVisible="{Binding UsarDetalles}"
+                    Margin="0,-20,0,0"
+                    ColumnDefinitions="Auto,*,Auto">
 
-            <!--borde para titulo de "descrpcion del gasto"-->
-            <Border BackgroundColor="{StaticResource Terciary}"
-             WidthRequest="250" HeightRequest="40"
-             StrokeShape="RoundRectangle 5"
-             Stroke="{StaticResource Terciary}"
-             Margin="10,10,0,0" VerticalOptions="Start"
-             HorizontalOptions="Start">
+                    <!--boton eliminar fila (izquierda)-->
+                    <Border Grid.Column="0"
+                            WidthRequest="40"
+                            HeightRequest="40" Margin="15,0,0,0"
+                            BackgroundColor="{StaticResource Terciary}">
 
-                <!--texto para titulo de "descrpcion del gasto"-->
-                <Label 
-                 Text="Descripción Del Egreso:" FontSize="Large"
-                 HorizontalOptions="Center" VerticalOptions="Center"
-                 FontAttributes="Bold"/>
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="100"/>
+                        </Border.StrokeShape>
 
-            </Border>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding QuitarFilaCommand}"/>
+                        </Border.GestureRecognizers>
 
-            <!--espacio para ingreso por teclado de "descrpcion del gasto"-->
-            <Entry 
-             Text="{Binding Descripcion}" Placeholder="¿En qué se gastó? (opcional)" FontAttributes="None"
-             Margin="10,10,10,0" FontSize="Large" Keyboard="Text"/>
+                        <Image Source="eliminarfila.svg" WidthRequest="27" HeightRequest="27"/>
 
-            <!--borde para titulo de "monto"-->
-            <Border BackgroundColor="{StaticResource Terciary}"
-             WidthRequest="90" HeightRequest="40"
-             StrokeShape="RoundRectangle 5"
-             Stroke="{StaticResource Terciary}"
-             Margin="10,10,0,0" VerticalOptions="Start"
-             HorizontalOptions="Start">
+                    </Border>
 
-                <!--texto para titulo de "monto"-->
-                <Label 
-                 Text="Monto:" FontSize="Large"
-                 HorizontalOptions="Center" VerticalOptions="Center"
-                 FontAttributes="Bold"/>
+                    <!-- espacio central -->
+                    <BoxView Grid.Column="1" />
 
-            </Border>
+                    <!-- Botón agregar fila (derecha) -->
+                    <Border
+                     Grid.Column="2"
+                     WidthRequest="40"
+                     HeightRequest="40" Margin="0,0,15,0"
+                     BackgroundColor="{StaticResource Terciary}">
 
-            <!--espacio para ingreso por teclado de "monto"-->
-            <Entry 
-             Text="{Binding Monto}" Placeholder="00,0$" FontAttributes="None"
-             Margin="10,10,10,0" FontSize="Large" Keyboard="Numeric"/>
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="100"/>
+                        </Border.StrokeShape>
 
-            <!--boton para guardar y validar los datos ingresados-->
-            <Button
-             Text="Guardar" Command="{Binding GuardarEgresoCommand}"
-             FontSize="Large" FontAttributes="Bold"
-             HorizontalOptions="Center"
-             BackgroundColor="{StaticResource Terciary}"
-             TextColor="{StaticResource Secondary}"
-             BorderColor="{StaticResource Secondary}" BorderWidth="1"/>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding AgregarFilaCommand}" />
+                        </Border.GestureRecognizers>
 
-            <!--informe del guardado-->
-            <Label 
-             Text="{Binding Informe}" TextColor="{Binding ColorInforme}" 
-             VerticalOptions="Center"
-             HorizontalOptions="Center"/>
+                        <Image Source="agregarfila.svg" WidthRequest="27" HeightRequest="27"/>
 
-        </VerticalStackLayout>
+                    </Border>
+
+                </Grid>
+
+            </VerticalStackLayout>
+
+            <!--grilla dinamica-->
+            <CollectionView
+             Grid.Row="1"
+             VerticalOptions="Fill"
+             ItemsSource="{Binding Detalles}"
+             IsVisible="{Binding UsarDetalles}"
+             Margin="0,10,0,0">
+
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+
+                    <DataTemplate x:DataType="models:DetalleItem">
+
+                        <Grid ColumnDefinitions="2*,*,*,Auto"
+                         ColumnSpacing="6"
+                         Padding="4">
+
+                            <!-- Nombre -->
+                            <Entry
+                             Placeholder="Nombre." 
+                             Text="{Binding Nombre, Mode=TwoWay}"
+                             FontSize="Large"/>
+
+                            <!-- Cantidad -->
+                            <Entry
+                             Grid.Column="1" 
+                             Placeholder="Cant."
+                             Keyboard="Numeric"
+                             Text="{Binding Cantidad, Mode=TwoWay}"
+                             FontSize="Large"/>
+
+                            <!-- Precio Unitario -->
+                            <Entry
+                             Grid.Column="2"
+                             Placeholder="$C/u."
+                             Keyboard="Numeric"
+                             Text="{Binding PrecioUnitario, Mode=TwoWay}"
+                             FontSize="Large"/>
+
+                        </Grid>
+
+                    </DataTemplate>
+
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+
+        </Grid>
 
     </ContentPage>
 
