@@ -61,7 +61,7 @@ internal class IngresoViewModel : INotifyPropertyChanged
 
             //reset lógico y visual del monto
             Monto = null;
-            Logica.MontoIngreso = 0;
+            Logica.MontoIngreso = 0m;
 
             if (_usarDetalles)
             {
@@ -144,30 +144,31 @@ internal class IngresoViewModel : INotifyPropertyChanged
 
     //METODOS
 
-    bool TryGetMonto(out float monto)
+    bool TryGetMonto(out decimal monto)
     {
-        monto = 0;
+        monto = 0m;
     
         if (string.IsNullOrWhiteSpace(Monto))
             return false;
-    
-        return float.TryParse(
-            Monto,
-            NumberStyles.Float,
-            CultureInfo.InvariantCulture,
-            out monto
-        ) && monto > 0;
+
+        return decimal.TryParse(
+        Monto,
+        CultureInfo.InvariantCulture,
+        out monto
+        ) && monto > 0m;
+
     }
     void RecalcularMonto()
     {
         if (!UsarDetalles)
             return;
 
-        float total = 0;
+        decimal total = 0m;
         foreach (var d in Detalles)
             total += d.CantidadNumerica * d.PrecioUnitarioNumerico;
 
         Monto = total.ToString("0.##", CultureInfo.InvariantCulture);
+
     }
     void AgregarFila()
     {
@@ -214,10 +215,11 @@ internal class IngresoViewModel : INotifyPropertyChanged
             }
         }
 
-        if (!TryGetMonto(out float monto))
+        if (!TryGetMonto(out decimal monto))
             detallesValidos = false;
 
         bool ingresoValido = detallesValidos && Logica.ValidarIngreso(Origen ?? string.Empty, monto);
+
 
         if (ingresoValido)
         {

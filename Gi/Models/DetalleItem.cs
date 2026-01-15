@@ -27,7 +27,7 @@ public class DetalleItem : INotifyPropertyChanged
             {
                 _cantidad = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(CantidadNumerica));
+                //OnPropertyChanged(nameof(CantidadNumerica));
                 OnPropertyChanged(nameof(Subtotal));
             }
         }
@@ -50,25 +50,43 @@ public class DetalleItem : INotifyPropertyChanged
     }
 
     //propiedades strin a numericas para calculos del totoal
-    public float CantidadNumerica
+    public decimal CantidadNumerica
     {
         get
         {
-            if (string.IsNullOrWhiteSpace(_cantidad)) return 0;
-            if (!float.TryParse(_cantidad, out float result)) return 0;
-            return result > 0 ? result : 0; // Solo positivos
+            if (string.IsNullOrWhiteSpace(_cantidad)) return 0m;
+
+            if (!decimal.TryParse(
+                _cantidad,
+                System.Globalization.NumberStyles.Number,
+                System.Globalization.CultureInfo.InvariantCulture,
+                out decimal result)
+            )
+                return 0m;
+
+            return result > 0m ? result : 0m;//solo positivos
         }
     }
-    public float PrecioUnitarioNumerico
+
+    public decimal PrecioUnitarioNumerico
     {
         get
         {
-            if (string.IsNullOrWhiteSpace(_precioUnitario)) return 0;
-            if (!float.TryParse(_precioUnitario, out float result)) return 0;
-            return result > 0 ? result : 0; // Solo positivos
+            if (string.IsNullOrWhiteSpace(_precioUnitario)) return 0m;
+
+            if (!decimal.TryParse(
+                _precioUnitario,
+                System.Globalization.NumberStyles.Number,
+                System.Globalization.CultureInfo.InvariantCulture,
+                out decimal result)
+            ) 
+                return 0m;
+
+            return result > 0m ? result : 0m;//solo positivos
         }
     }
-    public float Subtotal => CantidadNumerica * PrecioUnitarioNumerico;
+
+    public decimal Subtotal => CantidadNumerica * PrecioUnitarioNumerico;
 
     public event PropertyChangedEventHandler? PropertyChanged;
     void OnPropertyChanged([CallerMemberName] string? name = null)

@@ -24,14 +24,14 @@ public static class Logica
 
     public static bool Ingreso { get; set; } = false;
         public static string? Origen { get; set; }
-        public static float MontoIngreso { get; set; }
+        public static decimal MontoIngreso { get; set; }
 
 
 
     public static bool Egreso { get; set; } = false;
         public static string? Destino { get; set; }
         public static string? DescDelEgreso { get; set; }
-        public static float MontoEgreso { get; set; }
+        public static decimal MontoEgreso { get; set; }
 
 
     public static List<DetalleItem> DetallesIngreso { get; set; } = new();
@@ -40,7 +40,7 @@ public static class Logica
 
 
     //METODOS
-    public static bool ValidarReferencia(string fecha,object tipoDePago,string motivo)
+    public static bool ValidarReferencia(string fecha,string tipoDePago,string motivo)
     {
         bool fechaValida = DateTime.TryParse(fecha, out DateTime auxFecha);
         bool tipoDePagoValida = tipoDePago != null;
@@ -58,10 +58,10 @@ public static class Logica
 
         return Referencia;
     }
-    public static bool ValidarIngreso(string origen, float monto)
+    public static bool ValidarIngreso(string origen, decimal monto)
     {
         bool origenValido = !string.IsNullOrWhiteSpace(origen);
-        bool montoValido = monto > 0;
+        bool montoValido = monto > 0m;
 
         if (origenValido && montoValido)
         {
@@ -76,10 +76,10 @@ public static class Logica
 
         return Ingreso;
     }
-    public static bool ValidarEgreso(string destino, string descDelGasto, float monto)
+    public static bool ValidarEgreso(string destino, string descDelGasto, decimal monto)
     {
         bool destinoValido = !string.IsNullOrWhiteSpace(destino);
-        bool montoValido = monto > 0;
+        bool montoValido = monto > 0m;
 
         if (destinoValido && montoValido)
         {
@@ -87,10 +87,7 @@ public static class Logica
             Destino = destino;
             MontoEgreso = -monto;
 
-            if (!string.IsNullOrWhiteSpace(descDelGasto))
-                DescDelEgreso = descDelGasto;
-            else
-                DescDelEgreso = "-";
+            DescDelEgreso = string.IsNullOrWhiteSpace(descDelGasto) ? "-" : descDelGasto;
         }
         else
         {
@@ -239,7 +236,7 @@ public static class Logica
                 //string motivo listo
                 string origenDestino = Ingreso ? Origen! : Destino!;
                 string descDelEgreso = Ingreso ? "-" : DescDelEgreso!; //! para deajar en claro q esta validado
-                float monto = Ingreso ? MontoIngreso : MontoEgreso;
+                decimal monto = Ingreso ? MontoIngreso : MontoEgreso;
                 //grilla con detalles listo
 
 
@@ -300,24 +297,25 @@ public static class Logica
                 //formato de plata/biyuya/la lana/el money
                 for (int fila = filaInicio; fila <= filaFinal; fila++)
                 {
-                    //Formato para Monto (columna 7)
+                    //Monto (columna 7)
                     var celdaMonto = hoja.Cell(fila, 7);
 
-                    if (celdaMonto.TryGetValue(out double valorMonto))
+                    if (celdaMonto.TryGetValue(out decimal valorMonto))
                     {
                         celdaMonto.Style.NumberFormat.Format =
-                            Math.Abs(valorMonto % 1) <= 0.00001 ? "$#,##0" : "$#,##0.00";
+                            valorMonto % 1m == 0m ? "$#,##0" : "$#,##0.00";
                     }
 
-                    // Formato para Precio Unitario (columna 10)
+                    //Precio unitario (columna 10)
                     var celdaPrecio = hoja.Cell(fila, 10);
 
-                    if (celdaPrecio.TryGetValue(out double valorPrecio))
+                    if (celdaPrecio.TryGetValue(out decimal valorPrecio))
                     {
                         celdaPrecio.Style.NumberFormat.Format =
-                            Math.Abs(valorPrecio % 1) <= 0.00001 ? "$#,##0" : "$#,##0.00";    
+                            valorPrecio % 1m == 0m ? "$#,##0" : "$#,##0.00";
                     }
                 }
+
 
                 //actualiza (y si es necesario crea en la ruta) el achivo de movimientos
                 workbook.SaveAs(RutaArchMovimientos());
@@ -512,7 +510,7 @@ public static class Logica
     //crear exel✅
     //actualizar ordenadamente el exel✅
     //abrir exel✅
-    //incluir recurso de plantilla bonita de exel e implementar en el archivo🔴4
+    //incluir recurso de plantilla bonita de exel e implementar en el archivo🔴1
     //aunque no estoy seguro de como implenmentar Deudas.xlsx, dejar el codigo listo para su implementacion en todas las formas de Movimientos.xlsx✅
     //limpiar el evento de exportar (me refiero a la banda de if q tiene)✅
 
@@ -538,7 +536,7 @@ public static class Logica
 
 
     //Logica.cs
-    //cambiar el variables q manejan valores de decimal a float🔴1
-    //recta final...revisar el codtigo quitando amiguedades y codigo repetido🔴2
-    //pq tener solo 1 archivo donde exportar?...(revisar idea de mas archivos a la disposicion del usuario)🔴3
+    //cambiar el variables q manejan valores de float a decimal✅
+    //recta final...revisar el codtigo quitando amiguedades y codigo repetido🔴3
+    //pq tener solo 1 archivo donde exportar?...(revisar idea de mas archivos a la disposicion del usuario)🔴2
 }

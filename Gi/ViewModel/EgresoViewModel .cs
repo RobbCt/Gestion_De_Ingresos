@@ -149,26 +149,27 @@ internal class EgresoViewModel : INotifyPropertyChanged
 
     // METODOS
 
-    bool TryGetMonto(out float monto)
+    bool TryGetMonto(out decimal monto)
     {
-        monto = 0;
+        monto = 0m;
 
         if (string.IsNullOrWhiteSpace(Monto))
             return false;
 
-        return float.TryParse(
+        return decimal.TryParse(
             Monto,
-            NumberStyles.Float,
+            NumberStyles.Number,
             CultureInfo.InvariantCulture,
             out monto
-        ) && monto > 0;
+        ) && monto > 0m;
+
     }
     void RecalcularMonto()
     {
         if (!UsarDetalles)
             return;
 
-        float total = 0;
+        decimal total = 0m;
         foreach (var d in Detalles)
             total += d.CantidadNumerica * d.PrecioUnitarioNumerico;
 
@@ -225,14 +226,9 @@ internal class EgresoViewModel : INotifyPropertyChanged
         }
 
         // validar monto (viene del entry o de la grilla)
-        if (!float.TryParse(
-            Monto,
-            NumberStyles.Float,
-            CultureInfo.InvariantCulture,
-            out float monto))
-        {
+        if (!TryGetMonto(out decimal monto))
             detallesValidos = false;
-        }
+        
 
         bool egresoValido = detallesValidos && Logica.ValidarEgreso(Destino ?? string.Empty, Descripcion ?? string.Empty, monto);
 
@@ -277,8 +273,8 @@ internal class EgresoViewModel : INotifyPropertyChanged
 
         UsarDetalles = false;
 
-        Detalles.Clear();
-        AgregarFila();
+        //Detalles.Clear();
+        //AgregarFila();
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
