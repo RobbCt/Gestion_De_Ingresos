@@ -18,10 +18,10 @@ public partial class App : Application
     }
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        //para poder realizar el primer arranque limpio
-       
-        Logica.CrearArchMovimientos();
-      
+        //para realizar el primer arranque limpio
+        Task.Run(async () => await Logica.CrearArchMovimientos()).Wait();
+
+
 
         // Usamos NavigationPage para implementar
         // una navegación de pantallas

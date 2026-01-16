@@ -43,14 +43,14 @@ public static class Logica
     public static bool ValidarReferencia(string fecha,string tipoDePago,string motivo)
     {
         bool fechaValida = DateTime.TryParse(fecha, out DateTime auxFecha);
-        bool tipoDePagoValida = tipoDePago != null;
+        bool tipoDePagoValida = !string.IsNullOrWhiteSpace(tipoDePago);
         bool motivoValido = !string.IsNullOrWhiteSpace(motivo);
        
         if (fechaValida && tipoDePagoValida && motivoValido)
         {
             Referencia = true;
             Fecha = auxFecha;
-            TipoDePago = tipoDePago!.ToString();
+            TipoDePago = tipoDePago;
             Motivo = motivo;
         }
         else
@@ -122,84 +122,51 @@ public static class Logica
         return Path.Combine(CarpetaArchivos(), "Deudas.xlsx");
         //ruta al archivo, nombre y tipo
     }
-    public static XLWorkbook AbrirOcrearWorkbook(string rutaArch)
+    public static XLWorkbook AbrirWorkbook(string rutaArch)
     {
         //instancio el XLWorkbook (archivo de exel en memoria temporal) con la
         //info el archivo existente (la op false podria quitarla, pero prefiero capturar los datos en cualquier caso)
-        return File.Exists(rutaArch) ? new XLWorkbook(rutaArch) : new XLWorkbook();
+        return new XLWorkbook(rutaArch);
     }
-   
-    public static void CrearArchMovimientos()
+
+    public static async Task CrearArchMovimientos()
     {
-        //crear ArchMovimientos en el arranque limpio (el pirmer inicio)
-        
-        string ruta = RutaArchMovimientos();
+        string rutaDestino = RutaArchMovimientos();
 
-        if(!File.Exists(ruta))
+        //Si ya existe no hagas nada
+        if (File.Exists(rutaDestino))
+            return;
+
+        try
         {
-            //using = el archivo esta en memoria temporal solo dentro de las llaves...
-            using (var workbook = new XLWorkbook())
-            {
-                var hoja = workbook.Worksheets.Add("Datos");
+            //Cargar plantilla desde recursos
+            using var streamPlantilla = await FileSystem.OpenAppPackageFileAsync("PlantillaMovimientos.xlsx");
 
+            //Crear archivo en destino
+            using var fileStream = File.Create(rutaDestino);
 
+            //Copiar plantilla al destino
+            await streamPlantilla.CopyToAsync(fileStream);
+        }
+        catch
+        {
+            //Si fallaa crea archivo básico
+            using var workbook = new XLWorkbook();
+            var hoja = workbook.Worksheets.Add("DATOS");
 
+            //Encabezados mínimos
+            hoja.Cell(1, 2).Value = "Fecha";
+            hoja.Cell(1, 3).Value = "Tipo Movimiento";
+            hoja.Cell(1, 4).Value = "Tipo Pago";
+            hoja.Cell(1, 5).Value = "Motivo";
+            hoja.Cell(1, 6).Value = "Origen/Destino";
+            hoja.Cell(1, 7).Value = "Descripción";
+            hoja.Cell(1, 8).Value = "Monto";
+            hoja.Cell(1, 9).Value = "Nombre";
+            hoja.Cell(1, 10).Value = "Cantidad";
+            hoja.Cell(1, 11).Value = "Precio Unitario";
 
-                //DESCRIPCIÓN (columnas 1 a 4)
-                hoja.Range(1, 1, 1, 4).Merge().Value = "DESCRIPCIÓN";
-
-                //INGRESO / EGRESO (columnas 5 a 7)
-                hoja.Range(1, 5, 1, 7).Merge().Value = "INGRESO/EGRESO";
-
-                //DETALLES (columnas 8 a 10)
-                hoja.Range(1, 8, 1, 10).Merge().Value = "DETALLES";
-
-                var filaTitulos = hoja.Range(1, 1, 1, 10);
-                filaTitulos.Style.Font.Bold = true;
-                filaTitulos.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                filaTitulos.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-
-
-                //ENCABEZADOS DE COLUMNA
-                hoja.Cell(2, 1).Value = "Fecha";
-                hoja.Cell(2, 2).Value = "Tipo de movimiento";
-                hoja.Cell(2, 3).Value = "Tipo de pago";
-                hoja.Cell(2, 4).Value = "Motivo";
-
-                hoja.Cell(2, 5).Value = "Origen / Destino";
-                hoja.Cell(2, 6).Value = "Descripción";
-                hoja.Cell(2, 7).Value = "Monto";
-
-                hoja.Cell(2, 8).Value = "Nombre";
-                hoja.Cell(2, 9).Value = "Cantidad";
-                hoja.Cell(2, 10).Value = "Precio C/u";
-
-                
-                //FORMATO DE CELDA CENTRADA
-                var filaEncabezados = hoja.Range(2, 1, 2, 10);
-
-                filaEncabezados.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-                filaEncabezados.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
-                filaEncabezados.Style.Border.OutsideBorderColor = XLColor.Black;
-                filaEncabezados.Style.Border.InsideBorderColor = XLColor.Black;
-
-                filaEncabezados.Style.Fill.BackgroundColor = XLColor.FromHtml("#1b998b");
-                filaEncabezados.Style.Font.FontColor = XLColor.Black;
-                filaEncabezados.Style.Font.Bold = true;
-                filaEncabezados.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                filaEncabezados.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-
-                hoja.Columns().AdjustToContents();
-
-                //ANCHO DE COLUMNAS CON MAS INFO
-                hoja.Column(1).Width = 14;
-                hoja.Column(4).Width = 14;
-                hoja.Column(6).Width = 14;
-                hoja.Column(7).Width = 14;
-
-
-                workbook.SaveAs(ruta);
-            }//...luego de escribirse se libera (optimizar tiempo)
+            workbook.SaveAs(rutaDestino);
         }
     }
     public static Task <(bool estado, string? msj)> GuardarArchMovimientos()
@@ -215,16 +182,27 @@ public static class Logica
             }
 
             //declaracion clase q maneja el exel (obj)
-            using (XLWorkbook workbook = AbrirOcrearWorkbook(RutaArchMovimientos()))
+            using (XLWorkbook workbook = AbrirWorkbook(RutaArchMovimientos()))
             {
 
                 //exel maneja hojas, solo necesito una con el nombre de Datos
                 // ?? (Izq == NULL -> se ejetuca Der, si no Izq) elegancia de C#
                 var hoja = workbook.Worksheets.FirstOrDefault() ?? workbook.Worksheets.Add("Datos");
 
-                int filaInicio = hoja.LastRowUsed()?.RowNumber() + 1 ?? 3;
-
-
+                int ultimaFilaFecha = hoja.Column(2).LastCellUsed()?.Address.RowNumber ?? 5;
+                int saltarFilas = 0;
+                for (int f = ultimaFilaFecha + 1; ; f++)
+                {
+                    if (!hoja.Cell(f, 9).IsEmpty())//Columna I = 9 (Nombre)
+                        saltarFilas++;
+                    else
+                        break;
+                }
+                
+                int filaInicio = ultimaFilaFecha + saltarFilas + 1;
+                
+                if (filaInicio < 6)
+                    filaInicio = 6;
 
                 //formato ingreso: fecha|tipoDeMovimiento|tipoDePago|motivo|origen |             |monto|nombre|cantidad|precioC/u|
                 //formato egreso:  fecha|tipoDeMovimiento|tipoDePago|motivo|destino|descDelEgreso|monto|nombre|cantidad|precioC/u|
@@ -244,8 +222,9 @@ public static class Logica
                 //si hay datos de detalles los escribimos, sino se deja las celdas 8-10 vacias
                 List<DetalleItem> detalles = Ingreso ? DetallesIngreso : DetallesEgreso;
 
-                //habra detalles
+                //habra detalles?
                 int filas = detalles.Count > 0 ? detalles.Count : 1;
+                
 
                 //escribo en el exel la fila de referencia + ingreso/egreso, al final de la 
                 //fila inserto la grilla de detalles (3 columnas, N filas cargadas por el usuario)
@@ -257,48 +236,47 @@ public static class Logica
                     if (i == 0)
                     {
                         //escribo los datos en la ultima fila libre
-                        hoja.Cell(filaActual, 1).Value = Fecha.ToString("dd/MM/yyyy");
-                        hoja.Cell(filaActual, 2).Value = tipoMovimiento;
-                        hoja.Cell(filaActual, 3).Value = TipoDePago;
-                        hoja.Cell(filaActual, 4).Value = Motivo;
-                        hoja.Cell(filaActual, 5).Value = origenDestino;
-                        hoja.Cell(filaActual, 6).Value = descDelEgreso;
-                        hoja.Cell(filaActual, 7).Value = monto;
+                        hoja.Cell(filaActual, 2).Value = Fecha.ToString("dd/MM/yyyy");
+                        hoja.Cell(filaActual, 3).Value = tipoMovimiento;
+                        hoja.Cell(filaActual, 4).Value = TipoDePago;
+                        hoja.Cell(filaActual, 5).Value = Motivo;
+                        hoja.Cell(filaActual, 6).Value = origenDestino;
+                        hoja.Cell(filaActual, 7).Value = descDelEgreso;
+                        hoja.Cell(filaActual, 8).Value = monto;
                     }
 
                     //grilla de detalles solo si los hay
                     if (detalles.Count > 0)
                     {
                         var detalle = detalles[i];
-                        hoja.Cell(filaActual, 8).Value = detalle.Nombre;
-                        hoja.Cell(filaActual, 9).Value = detalle.CantidadNumerica;
-                        hoja.Cell(filaActual, 10).Value = detalle.PrecioUnitarioNumerico;
+                        hoja.Cell(filaActual, 9).Value = detalle.Nombre;
+                        hoja.Cell(filaActual, 10).Value = detalle.CantidadNumerica;
+                        hoja.Cell(filaActual, 11).Value = detalle.PrecioUnitarioNumerico;
                     }
                     else
                     {
                         //celdas vacías si no los hay
-                        hoja.Cell(filaActual, 8).Clear();
-                        hoja.Cell(filaActual, 9).Clear();
-                        hoja.Cell(filaActual, 10).Clear();
-
+                        //hoja.Cell(filaActual, 9).Clear();
+                        //hoja.Cell(filaActual, 10).Clear();
+                        //hoja.Cell(filaActual, 11).Clear();
                     }
 
                 }
 
                 //centrar celdas escritas
-                hoja.Range(filaInicio, 1, filaInicio + filas - 1, 10)
+                hoja.Range(filaInicio, 2, filaInicio + filas - 1, 11)
                     .Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
                 //linea negrita divisoria de movimiento
                 int filaFinal = filaInicio + filas - 1;
-                hoja.Range(filaFinal, 1, filaFinal, 10)
+                hoja.Range(filaFinal, 2, filaFinal, 12)
                     .Style.Border.BottomBorder = XLBorderStyleValues.Medium;
 
                 //formato de plata/biyuya/la lana/el money
                 for (int fila = filaInicio; fila <= filaFinal; fila++)
                 {
-                    //Monto (columna 7)
-                    var celdaMonto = hoja.Cell(fila, 7);
+                    //Monto (columna 8)
+                    var celdaMonto = hoja.Cell(fila, 8);
 
                     if (celdaMonto.TryGetValue(out decimal valorMonto))
                     {
@@ -306,8 +284,8 @@ public static class Logica
                             valorMonto % 1m == 0m ? "$#,##0" : "$#,##0.00";
                     }
 
-                    //Precio unitario (columna 10)
-                    var celdaPrecio = hoja.Cell(fila, 10);
+                    //Precio unitario (columna 11)
+                    var celdaPrecio = hoja.Cell(fila, 11);
 
                     if (celdaPrecio.TryGetValue(out decimal valorPrecio))
                     {
@@ -402,7 +380,7 @@ public static class Logica
     {
         try
         {
-            using (XLWorkbook workbook = AbrirOcrearWorkbook(RutaArchDeudas()))
+            using (XLWorkbook workbook = AbrirOWorkbook(RutaArchDeudas()))
             {
                 var hoja = workbook.Worksheets.FirstOrDefault() ?? workbook.Worksheets.Add("Historia");
 
@@ -500,7 +478,7 @@ public static class Logica
 
         ResetGlobalSolicitado?.Invoke();
     }
-
+    
 
 
 

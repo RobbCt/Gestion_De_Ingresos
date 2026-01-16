@@ -5,6 +5,7 @@
              xmlns:local="clr-namespace:Gi" 
              xmlns:models="clr-namespace:Gi.Models"
              x:Class="Gi.TabbedPageGi"
+             xmlns:viewModels="clr-namespace:Gi.ViewModels"
              Title="                    Inicio"
             
              BarBackground="Black"   
@@ -27,7 +28,8 @@
         <ContentPage.BindingContext>
             <viewModels:ReferenciaViewModel />
         </ContentPage.BindingContext>
-
+        
+        
         <!--distribucon vertical de la pestana de referencia-->
         <VerticalStackLayout Spacing="2" HorizontalOptions="Fill">
 
@@ -183,7 +185,7 @@
         <ContentPage.BindingContext>
             <viewModels:IngresoViewModel />
         </ContentPage.BindingContext>
-
+        
 
         <Grid RowDefinitions="Auto,*">
 
@@ -436,6 +438,7 @@
         <ContentPage.BindingContext>
             <viewModels:EgresoViewModel />
         </ContentPage.BindingContext>
+        
 
         <Grid RowDefinitions="Auto,*">
         

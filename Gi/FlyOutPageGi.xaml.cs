@@ -1,4 +1,4 @@
-using System.Xml;
+Ôªøusing System.Xml;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.Maui.Graphics.Text;
 
@@ -20,13 +20,13 @@ public partial class FlyOutPageGi : FlyoutPage
     private async Task manejarExepciones((bool estado,string? msj) resultado)
     {
         if (resultado.estado)
-            await Application.Current!.Windows[0].Page!.DisplayAlertAsync("…xito", resultado.msj, "Aceptar");
+            await Application.Current!.Windows[0].Page!.DisplayAlertAsync("√âxito", resultado.msj, "Aceptar");
         else
             await Application.Current!.Windows[0].Page!.DisplayAlertAsync("Error", resultado.msj, "Aceptar");
     }
     private void OnMenuButtonClicked()
     {
-        //Abre el Flyout al presionar el botÛn del toolbar
+        //Abre el Flyout al presionar el bot√≥n del toolbar
         IsPresented = !IsPresented;
     }
 
@@ -35,9 +35,9 @@ public partial class FlyOutPageGi : FlyoutPage
     {
         bool band = false;
 
-        //Combinaciones v·lidas para exportar:
-        //1. Referencia + Ingreso v·lidos
-        //2. Referencia + Egreso v·lidos
+        //Combinaciones v√°lidas para exportar:
+        //1. Referencia + Ingreso v√°lidos
+        //2. Referencia + Egreso v√°lidos
 
         if (Logica.Referencia)
         {
@@ -53,9 +53,7 @@ public partial class FlyOutPageGi : FlyoutPage
             }
         }
 
-
-
-        //band significa la exportacion de la infromacion actual (una convinacion valida
+        //band significa la exportacion de la infromacion actual (una convinacion valida)
         if (band)
         {
             var resultado = await Logica.GuardarArchMovimientos();
@@ -92,27 +90,29 @@ public partial class FlyOutPageGi : FlyoutPage
     }
 
 
-    /*private async void exportarArchDeudas(object sender, EventArgs e)
-    {
-        //fijate validaciones de datos antes de poder eportar
-    
-        var resultado = await Logica.GuardarArchDeudas();
-
-        if (resultado.estado)
-            await Application.Current!.Windows[0].Page!.DisplayAlertAsync("…xito", "Archivo Deudas guardado correctamente", "OK");
-        else
-            await manejarExepciones(resultado);
-    }*/
-    /*private async void irAlArchDeudas(object sender, EventArgs e)
-    {
-        var resultado = await Logica.irAlArchDeudas();
-        await manejarExepciones(resultado);
-    }*/
-    /*private async void compartirArchDeudas(object sender, EventArgs e)
-    {
-        var resultado = await Logica.CompartirArchDeudas();
-        await manejarExepciones(resultado);
-    }*/
-
-
+    // En el constructor o donde tengas otros botones, agrega:
+    // var analizarBtn = new Button { Text = "üîç Analizar Plantilla" };
+    // analizarBtn.Clicked += AnalizarPlantilla_Clicked;
 }
+
+/*private async void exportarArchDeudas(object sender, EventArgs e)
+{
+    //fijate validaciones de datos antes de poder eportar
+
+    var resultado = await Logica.GuardarArchDeudas();
+
+    if (resultado.estado)
+        await Application.Current!.Windows[0].Page!.DisplayAlertAsync("√âxito", "Archivo Deudas guardado correctamente", "OK");
+    else
+        await manejarExepciones(resultado);
+}*/
+/*private async void irAlArchDeudas(object sender, EventArgs e)
+{
+    var resultado = await Logica.irAlArchDeudas();
+    await manejarExepciones(resultado);
+}*/
+/*private async void compartirArchDeudas(object sender, EventArgs e)
+{
+    var resultado = await Logica.CompartirArchDeudas();
+    await manejarExepciones(resultado);
+}*/
