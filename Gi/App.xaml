@@ -7,9 +7,22 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary>
+                    
+                    <!--Colores -->
                     <Color x:Key="Primary">#1b998b</Color>
                     <Color x:Key="Secondary">#FFFFFF</Color>
                     <Color x:Key="Terciary">#3b7170</Color>
+
+                    <!--Tamano de fuente-->
+                    <OnPlatform x:Key="TitleFontSize" x:TypeArguments="x:Double">
+                        <On Platform="Android" Value="23"/>
+                        <On Platform="iOS" Value="23"/>
+                    </OnPlatform>
+
+                    <OnPlatform x:Key="FieldFontSize" x:TypeArguments="x:Double">
+                        <On Platform="Android" Value="21"/>
+                        <On Platform="iOS" Value="21"/>
+                    </OnPlatform>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

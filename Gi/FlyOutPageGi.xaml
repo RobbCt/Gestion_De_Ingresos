@@ -3,11 +3,25 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Gi" 
              x:Class="Gi.FlyOutPageGi"
-             Title="FlyOutPageGi"
+             Title=""
              FlyoutLayoutBehavior="Split"
              BackgroundColor="Black"
              >
-    <!-- Declara el namespace local "xmlns:local="clr-namespace:Gi"" -->
+    <!--Declara el namespace local "xmlns:local="clr-namespace:Gi"" -->
+
+    <!--titulo sobre el tabbedPage-->
+    <NavigationPage.TitleView>
+        <Grid>
+            <Label Text="Menu"
+               HorizontalOptions="End"
+               VerticalOptions="Center"
+               FontAttributes="Bold"
+               FontSize="14"
+               TextColor="{StaticResource Secondary}" />
+        </Grid>
+    </NavigationPage.TitleView>
+
+
 
 
 
@@ -112,11 +126,7 @@
 
     <!--el detail del flyout sera un tabbed page en otro archivo-->
     <FlyoutPage.Detail>
-        <NavigationPage>
-            <x:Arguments>
-                <local:TabbedPageGi/>
-            </x:Arguments>
-        </NavigationPage>
+        <local:TabbedPageGi/>
     </FlyoutPage.Detail>
 
 </FlyoutPage>

@@ -478,7 +478,7 @@ public static class Logica
 
         ResetGlobalSolicitado?.Invoke();
     }
-    
+
 
 
 
@@ -488,7 +488,7 @@ public static class Logica
     //crear exel✅
     //actualizar ordenadamente el exel✅
     //abrir exel✅
-    //incluir recurso de plantilla bonita de exel e implementar en el archivo🔴1
+    //incluir recurso de plantilla bonita de exel e implementar en el archivo✅
     //aunque no estoy seguro de como implenmentar Deudas.xlsx, dejar el codigo listo para su implementacion en todas las formas de Movimientos.xlsx✅
     //limpiar el evento de exportar (me refiero a la banda de if q tiene)✅
 
@@ -509,12 +509,16 @@ public static class Logica
     //una vez exportado un movimiento, q todos los entry se borren (y poner en false/cero/null todas las properties por security)✅
 
     //FlyOutPage.cs:
-    //hcaer/encontrar un algoritmo mas eficiente para encontrar las posibles combinaciones para poder exportar
+    //hcaer/encontrar un algoritmo mas eficiente para encontrar las posibles combinaciones para poder exportar✅
     //sin tantos✅
 
 
     //Logica.cs
     //cambiar el variables q manejan valores de float a decimal✅
     //recta final...revisar el codtigo quitando amiguedades y codigo repetido🔴3
-    //pq tener solo 1 archivo donde exportar?...(revisar idea de mas archivos a la disposicion del usuario)🔴2
+    //pq tener solo 1 archivo donde exportar?...(revisar idea de mas archivos a la disposicion del usuario)🔴(V2.0)
+
+    //General:
+    //anadir un READAME con el q la gente compre la idea js🔴2
+    //pdf de ayuda/instrucciones + buton q lo lleve a el🔴1
 }
