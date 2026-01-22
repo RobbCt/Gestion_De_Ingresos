@@ -44,7 +44,7 @@
 
                     <!--texto del titular-->
                     <Label
-                     Text="Opciones" FontSize="Large"
+                     Text="Opciones" FontSize="{StaticResource TitleFontSize}"
                      HorizontalOptions="Center"
                      VerticalOptions="Center" 
                      FontAttributes="Bold" 
@@ -57,7 +57,7 @@
                 <Button 
                  Text="Exportar"  ImageSource="exel.svg"
                  TextColor="{StaticResource Secondary}" 
-                 FontSize="Large" Margin="0,8,0,0"
+                 FontSize="{StaticResource FieldFontSize}" Margin="0,8,0,0"
                  HorizontalOptions="Fill"
                  Background="{StaticResource Terciary}"
                  FontAttributes="None"
@@ -68,7 +68,7 @@
                 <Button 
                  Text="Ir al archivo"  ImageSource="exportar.svg"
                  TextColor="{StaticResource Secondary}" 
-                 FontSize="Large" Margin="0,0,0,0"
+                 FontSize="{StaticResource FieldFontSize}" Margin="0,0,0,0"
                  HorizontalOptions="Fill"
                  Background="{StaticResource Terciary}"
                  FontAttributes="None"
@@ -78,7 +78,7 @@
                 <Button 
                  Text="Compartir"  ImageSource="compartir.svg"
                  TextColor="{StaticResource Secondary}" 
-                 FontSize="Large" Margin="0,0,0,0"
+                 FontSize="{StaticResource FieldFontSize}" Margin="0,0,0,0"
                  HorizontalOptions="Fill"
                  Background="{StaticResource Terciary}"
                  FontAttributes="None"
@@ -88,7 +88,7 @@
                 <Button 
                  Text="Deudas"  ImageSource="deuda.svg"
                  TextColor="{StaticResource Secondary}"
-                 FontSize="Large"
+                 FontSize="{StaticResource FieldFontSize}"
                  HorizontalOptions="Fill"
                  Background="{StaticResource Terciary}"
                  FontAttributes="None"/>
