@@ -504,6 +504,7 @@ public static class Logica
 
 
 
+
     //FlyOutPage.cs:
     //obtener ruta✅
     //crear exel✅
@@ -536,7 +537,7 @@ public static class Logica
 
     //Logica.cs
     //cambiar el variables q manejan valores de float a decimal✅
-    //recta final...revisar el codigo quitando amiguedades y codigo repetido🔴4
+    //recta final...revisar el codigo quitando amiguedades y codigo repetido✅
     //pq tener solo 1 archivo donde exportar?...(revisar idea de mas archivos a la disposicion del usuario)🔴(V2.0)
 
 
