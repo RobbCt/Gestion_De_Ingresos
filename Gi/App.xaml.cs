@@ -6,8 +6,8 @@ public partial class App : Application
     {
         InitializeComponent();
 
-                      //usamos NavigationPage para implementar
-                      //una navegacion de pantallas
+        //usamos NavigationPage para implementar
+        //una navegacion de pantallas
         //var navPage = new NavigationPage(new MainPage());
 
         //color de fondo

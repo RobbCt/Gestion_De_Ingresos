@@ -23,6 +23,12 @@
                         <On Platform="Android" Value="21"/>
                         <On Platform="iOS" Value="21"/>
                     </OnPlatform>
+
+                    <OnPlatform x:Key="SmallFontSize" x:TypeArguments="x:Double">
+                        <On Platform="Android" Value="16"/>
+                        <On Platform="iOS" Value="16"/>
+                    </OnPlatform>
+
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

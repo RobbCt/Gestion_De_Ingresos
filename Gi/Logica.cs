@@ -253,14 +253,7 @@ public static class Logica
                         hoja.Cell(filaActual, 10).Value = detalle.CantidadNumerica;
                         hoja.Cell(filaActual, 11).Value = detalle.PrecioUnitarioNumerico;
                     }
-                    else
-                    {
-                        //celdas vacías si no los hay
-                        //hoja.Cell(filaActual, 9).Clear();
-                        //hoja.Cell(filaActual, 10).Clear();
-                        //hoja.Cell(filaActual, 11).Clear();
-                    }
-
+                    
                 }
 
                 //centrar celdas escritas
@@ -350,6 +343,34 @@ public static class Logica
             //retornar la tupla para separar la UI y back
         }
     }
+    public static async Task<(bool estado, string? msj)> irArchInstrucciones()
+    {
+        try
+        {
+            const string nombrePdf = "Instrucciones.pdf";
+
+            // abrir desde el paquete
+            using var stream = await FileSystem.OpenAppPackageFileAsync(nombrePdf);
+
+            var rutaDestino = Path.Combine(FileSystem.CacheDirectory, nombrePdf);
+
+            using var fileStream = File.Create(rutaDestino);
+            await stream.CopyToAsync(fileStream);
+
+            // abrir con visor.pdf externo
+            await Launcher.Default.OpenAsync(new OpenFileRequest
+            {
+                File = new ReadOnlyFile(rutaDestino)
+            });
+
+            return (true, null);
+        }
+        catch (Exception ex)
+        {
+            return (false, ex.Message);
+        }
+    }
+
 
     /*public static void CrearArchDeudas()
     {
@@ -518,8 +539,10 @@ public static class Logica
     //recta final...revisar el codigo quitando amiguedades y codigo repetido🔴4
     //pq tener solo 1 archivo donde exportar?...(revisar idea de mas archivos a la disposicion del usuario)🔴(V2.0)
 
+
     //General:
-    //anadir un READAME con el q la gente compre la idea js🔴3
-    //completamos las propiedades de Gi para q se vea como una app real🔴2
-    //pdf de ayuda/instrucciones + buton q lo lleve a el🔴1
+    //anadir un READAME con el q la gente compre la idea js🔴1
+    //completamos las propiedades de Gi para q se vea como una app real✅
+    //pdf de ayuda/instrucciones + buton q lo lleve a el✅
+    //que el flyout siempre desplegado en pantallas grandes no se encoja (rompe la app)✅
 }

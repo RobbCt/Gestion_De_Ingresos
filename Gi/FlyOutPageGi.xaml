@@ -31,92 +31,94 @@
         <!--contenedor de la pestana lateral-->
         <ContentPage Title="Menu" BackgroundColor="{StaticResource Terciary}">
 
-            <!--distribucion de la pestana lateral-->
-            <StackLayout Padding="20" Spacing="10">
+            <Grid>
 
-                <!--borde del label "titular" de la pestana lateral-->
-                <Border BackgroundColor="{StaticResource Primary}"
-                        WidthRequest="400" HeightRequest="40"
-                        Stroke="{StaticResource Primary}"
-                        StrokeShape="RoundRectangle 5"
-                        Margin="0,10,0,0" VerticalOptions="Start"
-                        HorizontalOptions="End">
+                <!--scroll para el modo horizontal-->
+                <ScrollView>
 
-                    <!--texto del titular-->
-                    <Label
-                     Text="Opciones" FontSize="{StaticResource TitleFontSize}"
-                     HorizontalOptions="Center"
-                     VerticalOptions="Center" 
-                     FontAttributes="Bold" 
-                     TextColor="{StaticResource Secondary}"
-                     Margin="90,0,0,0"/> 
+                    <!--distribucion de la pestana lateral-->
+                    <StackLayout Padding="20" Spacing="10">
 
-                </Border>
+                        <!--borde del label "titular" de la pestana lateral-->
+                        <Border BackgroundColor="{StaticResource Primary}"
+                         Stroke="{StaticResource Primary}"
+                         StrokeShape="RoundRectangle 5"
+                         Margin="0,10,0,0"
+                         VerticalOptions="Start"
+                         HorizontalOptions="Fill"
+                         Padding="5">
 
-                <!--Item boton exportar datos-->
-                <Button 
-                 Text="Exportar"  ImageSource="exel.svg"
-                 TextColor="{StaticResource Secondary}" 
-                 FontSize="{StaticResource FieldFontSize}" Margin="0,8,0,0"
-                 HorizontalOptions="Fill"
-                 Background="{StaticResource Terciary}"
-                 FontAttributes="None"
-                 Clicked="exportarArchMovimientos"/>
+                            <!--texto del titular-->
+                            <Label
+                             Text="Opciones" FontSize="{StaticResource TitleFontSize}"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Center" 
+                             FontAttributes="Bold" 
+                             TextColor="{StaticResource Secondary}"/>
+
+                        </Border>
+
+                        <!--Item boton exportar datos-->
+                        <Button 
+                         Text="Exportar" ImageSource="exel.svg"
+                         TextColor="{StaticResource Secondary}" 
+                         FontSize="{StaticResource FieldFontSize}" Margin="0,8,0,0"
+                         HorizontalOptions="Fill"
+                         Background="{StaticResource Terciary}"
+                         FontAttributes="None"
+                         Clicked="exportarArchMovimientos"/>
 
 
-                <!--Item boton abrir exel-->
-                <Button 
-                 Text="Ir al archivo"  ImageSource="exportar.svg"
-                 TextColor="{StaticResource Secondary}" 
-                 FontSize="{StaticResource FieldFontSize}" Margin="0,0,0,0"
-                 HorizontalOptions="Fill"
-                 Background="{StaticResource Terciary}"
-                 FontAttributes="None"
-                 Clicked="irAlArchMovimientos"/>
-                
-                <!--Item boton compartir exel-->
-                <Button 
-                 Text="Compartir"  ImageSource="compartir.svg"
-                 TextColor="{StaticResource Secondary}" 
-                 FontSize="{StaticResource FieldFontSize}" Margin="0,0,0,0"
-                 HorizontalOptions="Fill"
-                 Background="{StaticResource Terciary}"
-                 FontAttributes="None"
-                 Clicked="compartirArchMovimientos"/>
-                
-                <!--Item boton deudas (proximamente)-->
-                <Button 
-                 Text="Deudas"  ImageSource="deuda.svg"
-                 TextColor="{StaticResource Secondary}"
-                 FontSize="{StaticResource FieldFontSize}"
-                 HorizontalOptions="Fill"
-                 Background="{StaticResource Terciary}"
-                 FontAttributes="None"/>
+                        <!--Item boton abrir exel-->
+                        <Button 
+                         Text="Ir al archivo"  ImageSource="exportar.svg"
+                         TextColor="{StaticResource Secondary}" 
+                         FontSize="{StaticResource FieldFontSize}" Margin="0,0,0,0"
+                         HorizontalOptions="Fill"
+                         Background="{StaticResource Terciary}"
+                         FontAttributes="None"
+                         Clicked="irAlArchMovimientos"/>
+
+                        <!--Item boton compartir exel-->
+                        <Button 
+                         Text="Compartir"  ImageSource="compartir.svg"
+                         TextColor="{StaticResource Secondary}" 
+                         FontSize="{StaticResource FieldFontSize}" Margin="0,0,0,0"
+                         HorizontalOptions="Fill"
+                         Background="{StaticResource Terciary}"
+                         FontAttributes="None"
+                         Clicked="compartirArchMovimientos"/>
+
+                        <!--Item boton compartir exel-->
+                        <Button 
+                         Text="Ayuda"  ImageSource="ayuda.svg"
+                         TextColor="{StaticResource Secondary}" 
+                         FontSize="{StaticResource FieldFontSize}" Margin="0,0,0,0"
+                         HorizontalOptions="Fill"
+                         Background="{StaticResource Terciary}"
+                         FontAttributes="None"
+                         Clicked="irArchInstrucciones"/>
+
+                        <!--Item boton deudas (proximamente)-->
+                        <Button 
+                         Text="Deudas"  ImageSource="deuda.svg"
+                         TextColor="{StaticResource Secondary}"
+                         FontSize="{StaticResource FieldFontSize}"
+                         HorizontalOptions="Fill"
+                         Background="{StaticResource Terciary}"
+                         FontAttributes="None"/>
+
+                    </StackLayout>
+
+                </ScrollView>
 
                 <!--inhabilitar toques en espacios vacios-->
-                <Button
+                <BoxView
                  BackgroundColor="Transparent"
-                 HorizontalOptions="Start"
-                 VerticalOptions="Start"
-                 WidthRequest="1000" HeightRequest="1000"/>
+                 HorizontalOptions="Fill"
+                 VerticalOptions="Fill" />
 
-                
-                
-                
-                
-                
-                
-                   
-
-                
-                
-                
-                
-                
-                
-                
-                
-            </StackLayout>
+            </Grid>
             
         </ContentPage>
         
