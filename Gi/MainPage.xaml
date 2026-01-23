@@ -10,34 +10,39 @@
 
         <!--marca de agua-->
         <Label
-         FontAttributes="Bold" FontSize="Small"
+         FontAttributes="Bold" FontSize="{StaticResource SmallFontSize}"
          HorizontalTextAlignment="Center"
          VerticalTextAlignment="Start" 
-         Text="2025" TextColor="LightGray"/>
+         Text="2025" TextColor="LightGray"
+         Margin="0,10,0,0"/>
         
         <!--borde y cuadro central de inicio-->
         <Border BackgroundColor="{StaticResource Secondary}"
-                WidthRequest="270" HeightRequest="170"
                 StrokeThickness="3" Stroke="{StaticResource Primary}"
                 StrokeShape="RoundRectangle 15"
-                VerticalOptions="Center">
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                Padding="20">
             
             <!--distribucion de espacio dentro del cuadro central de inicio-->
             <VerticalStackLayout Spacing="15" VerticalOptions="Center">
 
                 <!--texto del cuadro central de inicio-->
                 <Label
-                 FontAttributes="Bold" FontSize="Large"
+                 FontAttributes="Bold" FontSize="{StaticResource TitleFontSize}"
                  HorizontalTextAlignment="Center"
                  Text="GESTION DE INGRESOS"
-                 TextColor="{StaticResource Primary}"/>
+                 TextColor="{StaticResource Primary}"
+                 LineBreakMode="WordWrap"
+                 MaxLines="2"/>
 
                 <!--boton del cuadro central de inicio-->
-                <Button 
-                 HeightRequest="70" WidthRequest="70"
-                 ImageSource="inicio.svg"
-                 BackgroundColor="{StaticResource Primary}"
-                 Clicked="IniciarInterfaz"/>
+                <Grid WidthRequest="70" HeightRequest="70">
+                    <Button
+                     ImageSource="inicio.svg"
+                     BackgroundColor="{StaticResource Primary}"
+                     Clicked="IniciarInterfaz"/>
+                </Grid>
 
             </VerticalStackLayout>
 
@@ -45,7 +50,7 @@
 
         <!--marca de agua-->
         <Label
-         FontAttributes="Bold" FontSize="Small"
+         FontAttributes="Bold" FontSize="{StaticResource SmallFontSize}"
          HorizontalTextAlignment="Center"
          VerticalTextAlignment="End"
          Text="© R.Closer" TextColor="LightGray"

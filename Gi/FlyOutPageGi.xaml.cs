@@ -10,13 +10,13 @@ public partial class FlyOutPageGi : FlyoutPage
     {
         InitializeComponent();
 
-        //Agregar un Toolbar
         ToolbarItems.Add(new ToolbarItem
         {
             IconImageSource = "menu.svg",
             Command = new Command(OnMenuButtonClicked),
         });
     }
+
     private async Task manejarExepciones((bool estado,string? msj) resultado)
     {
         if (resultado.estado)
@@ -27,7 +27,10 @@ public partial class FlyOutPageGi : FlyoutPage
     private void OnMenuButtonClicked()
     {
         //Abre el Flyout al presionar el botón del toolbar
-        IsPresented = !IsPresented;
+        if (DeviceInfo.Idiom == DeviceIdiom.Phone)
+        {
+            IsPresented = !IsPresented;
+        }
     }
 
     //////#EVENTOS/////
@@ -88,11 +91,14 @@ public partial class FlyOutPageGi : FlyoutPage
         if(!resultado.estado)
              await manejarExepciones(resultado);
     }
+    private async void irArchInstrucciones(object sender, EventArgs e)
+    {
+        var resultado = await Logica.irArchInstrucciones();
+        if (!resultado.estado)
+            await manejarExepciones(resultado);
+    }
 
 
-    // En el constructor o donde tengas otros botones, agrega:
-    // var analizarBtn = new Button { Text = "🔍 Analizar Plantilla" };
-    // analizarBtn.Clicked += AnalizarPlantilla_Clicked;
 }
 
 /*private async void exportarArchDeudas(object sender, EventArgs e)
