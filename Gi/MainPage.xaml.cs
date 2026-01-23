@@ -15,6 +15,7 @@ public partial class MainPage : ContentPage
         base.OnAppearing();
 
         //Precarga tel tabbedPage detras de la primera pantalla (una sola vez)
+        //ver q tanto te conviene esto ahora con Gi terminado
         if (_flyoutPrecargado != null)
             return;
 
@@ -38,6 +39,4 @@ public partial class MainPage : ContentPage
 
         TranslationX = 0;
     }
-
-    ///////////////////
 }

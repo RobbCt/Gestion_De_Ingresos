@@ -97,8 +97,6 @@ public partial class FlyOutPageGi : FlyoutPage
         if (!resultado.estado)
             await manejarExepciones(resultado);
     }
-
-
 }
 
 /*private async void exportarArchDeudas(object sender, EventArgs e)
