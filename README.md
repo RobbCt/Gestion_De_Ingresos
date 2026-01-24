@@ -82,7 +82,7 @@ Pensada para **uso personal** y para personas que necesitan llevar un control b�
 ## Instalación
 **[Descargar APK](https://github.com/RobbCt/Gestion_De_Ingresos/releases/latest)**
 
-🔗 Descarga directa: **[click aquí](https://github.com/RobbCt/Gestion_De_Ingresos/releases/latest)**
+🔗 Descarga directa: **[click aquí](https://github.com/RobbCt/Gestion_De_Ingresos/releases/download/v1.0/Gi.apk)**
 
 1. Descargar el archivo `.apk`
 2. Instalarlo en un dispositivo Android
