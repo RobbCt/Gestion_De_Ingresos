@@ -19,7 +19,7 @@ Pensada para **uso personal** y para personas que necesitan llevar un control b�
    - Tipo de pago
    - Motivo
 -  Visualizaci처n **total** de registros
--  Exportaci처n de datos a **Excel** (aplicaci처n **NECESARIA**)
+-  Exportaci처n de datos a **Excel** (aplicaci처n Microsoft Excel Spreadsheets **NECESARIA**)
 
 ---
 
